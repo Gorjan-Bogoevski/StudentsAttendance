@@ -68,6 +68,34 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    // ако немаш migrations на Azure, осигурај дека базата постои
+    db.Database.Migrate(); // ако не користиш migrations, смени во: db.Database.EnsureCreated();
+
+    if (!db.Users.Any())
+    {
+        // ако UserType ти е string, ставај "Professor"/"Student"
+        var professor = new Professor("prof1", "123",true);
+       
+
+        var student = new Student(
+            username: "221193",
+            password: "123",
+            firstName: "Gorjan",
+            lastName: "Bogoevski"
+        );
+
+        db.Users.Add(professor);
+        db.Users.Add(student);
+
+        db.SaveChanges();
+    }
+}
+
+
 // --------------------
 // Forwarded Headers (MUST be early)
 // --------------------
@@ -107,5 +135,6 @@ using (var scope = app.Services.CreateScope())
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
 app.Run();
