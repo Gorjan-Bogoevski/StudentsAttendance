@@ -101,7 +101,37 @@ public class SessionController : Controller
         if (!IsProfessor()) return Forbid();
         
         var dto = _sessionService.GetLiveInfo(id); 
+        
+        var baseUrl = GetBaseUrl();
+
+        var parts = (dto.QrCodeBase64 ?? "")
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+       if (parts.Length < 2)
+        {
+            dto.QrCodeBase64 = null; 
+            return Json(dto);
+        }
+
+        var sessionGuid = Guid.Parse(parts[0]);
+        var rawCode = parts[1];             
+
+        var joinUrl = $"{baseUrl}/Attendance/Join?sessionId={sessionGuid}&code={rawCode}";
+        var qr = _qrCodeService.GeneratePngDataUri(joinUrl);
+
+        dto.QrCodeBase64 = qr;
         return Json(dto);
+    }
+    private string GetBaseUrl()
+    {
+        var cfg = HttpContext.RequestServices.GetRequiredService<IConfiguration>();
+        var publicBase = cfg["App:PublicBaseUrl"];
+
+        if (!string.IsNullOrWhiteSpace(publicBase))
+            return publicBase.TrimEnd('/');
+
+        // fallback: тековниот host (локално/на сервер)
+        return $"{Request.Scheme}://{Request.Host}";
     }
 
 }
