@@ -1,0 +1,326 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Web/AttendanceStudents.Web.csproj": {}
+  },
+  "projects": {
+    "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/AttendanceStudents.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/AttendanceStudents.Domain.csproj",
+        "projectName": "AttendanceStudents.Domain",
+        "projectPath": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/AttendanceStudents.Domain.csproj",
+        "packagesPath": "/Users/gorjan/.nuget/packages/",
+        "outputPath": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/gorjan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.308/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/AttendanceStudents.Repository.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/AttendanceStudents.Repository.csproj",
+        "projectName": "AttendanceStudents.Repository",
+        "projectPath": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/AttendanceStudents.Repository.csproj",
+        "packagesPath": "/Users/gorjan/.nuget/packages/",
+        "outputPath": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/gorjan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/AttendanceStudents.Domain.csproj": {
+                "projectPath": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/AttendanceStudents.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.11, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[9.0.11, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[9.0.11, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.11, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[9.0.11, )"
+            },
+            "Microsoft.Extensions.Configuration.FileExtensions": {
+              "target": "Package",
+              "version": "[9.0.11, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[9.0.11, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.308/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/AttendanceStudents.Service.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/AttendanceStudents.Service.csproj",
+        "projectName": "AttendanceStudents.Service",
+        "projectPath": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/AttendanceStudents.Service.csproj",
+        "packagesPath": "/Users/gorjan/.nuget/packages/",
+        "outputPath": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/gorjan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/AttendanceStudents.Domain.csproj": {
+                "projectPath": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/AttendanceStudents.Domain.csproj"
+              },
+              "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/AttendanceStudents.Repository.csproj": {
+                "projectPath": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/AttendanceStudents.Repository.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "QRCoder": {
+              "target": "Package",
+              "version": "[1.7.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.308/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Web/AttendanceStudents.Web.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Web/AttendanceStudents.Web.csproj",
+        "projectName": "AttendanceStudents.Web",
+        "projectPath": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Web/AttendanceStudents.Web.csproj",
+        "packagesPath": "/Users/gorjan/.nuget/packages/",
+        "outputPath": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Web/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/gorjan/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/AttendanceStudents.Domain.csproj": {
+                "projectPath": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/AttendanceStudents.Domain.csproj"
+              },
+              "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/AttendanceStudents.Repository.csproj": {
+                "projectPath": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/AttendanceStudents.Repository.csproj"
+              },
+              "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/AttendanceStudents.Service.csproj": {
+                "projectPath": "/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/AttendanceStudents.Service.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[9.0.11, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[9.0.11, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.11, )"
+            },
+            "QRCoder": {
+              "target": "Package",
+              "version": "[1.7.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.308/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

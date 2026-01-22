@@ -1,0 +1,1078 @@
+@using System
+@using System.Linq
+@using System.Collections.Generic
+@model List<AttendanceStudents.Domain.Entities.Course>
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Професор - Почетна";
+
+    // 1-hour slots for clean rowspan
+    var slots = new (TimeSpan Start, TimeSpan End)[]
+    {
+        (new TimeSpan(8,0,0),  new TimeSpan(9,0,0)),
+        (new TimeSpan(9,0,0),  new TimeSpan(10,0,0)),
+        (new TimeSpan(10,0,0), new TimeSpan(11,0,0)),
+        (new TimeSpan(11,0,0), new TimeSpan(12,0,0)),
+        (new TimeSpan(12,0,0), new TimeSpan(13,0,0)),
+        (new TimeSpan(13,0,0), new TimeSpan(14,0,0)),
+        (new TimeSpan(14,0,0), new TimeSpan(15,0,0)),
+        (new TimeSpan(15,0,0), new TimeSpan(16,0,0)),
+        (new TimeSpan(16,0,0), new TimeSpan(17,0,0)),
+        (new TimeSpan(17,0,0), new TimeSpan(18,0,0)),
+        (new TimeSpan(18,0,0), new TimeSpan(19,0,0)),
+        (new TimeSpan(19,0,0), new TimeSpan(20,0,0)),
+        (new TimeSpan(20,0,0), new TimeSpan(21,0,0)),
+    };
+
+    var days = new[] { "Понеделник", "Вторник", "Среда", "Четврток", "Петок" };
+
+    int DayIndex(object? dayVal)
+    {
+        if (dayVal == null) return -1;
+        var s = dayVal.ToString()!.ToLower();
+
+        if (s.Contains("mon") || s.Contains("пон")) return 0;
+        if (s.Contains("tue") || s.Contains("вто")) return 1;
+        if (s.Contains("wed") || s.Contains("сре")) return 2;
+        if (s.Contains("thu") || s.Contains("чет")) return 3;
+        if (s.Contains("fri") || s.Contains("пет")) return 4;
+        return -1;
+    }
+
+    TimeSpan? ToTimeSpan(object? t)
+    {
+        if (t == null) return null;
+        if (t is TimeSpan ts) return ts;
+
+        if (t.GetType().Name == "TimeOnly")
+        {
+            if (TimeSpan.TryParse(t.ToString(), out var parsed)) return parsed;
+        }
+
+        if (TimeSpan.TryParse(t.ToString(), out var parsed2)) return parsed2;
+        return null;
+    }
+
+    string F(TimeSpan t) => $"{t.Hours:D2}:{t.Minutes:D2}";
+
+    int SlotIndexStart(TimeSpan t)
+    {
+        for (int i = 0; i < slots.Length; i++)
+            if (t >= slots[i].Start && t < slots[i].End) return i;
+        return -1;
+    }
+
+    int SlotIndexEnd(TimeSpan t)
+    {
+        for (int i = 0; i < slots.Length; i++)
+            if (t > slots[i].Start && t <= slots[i].End) return i;
+        return -1;
+    }
+
+    // split by semester
+    var winterCourses = Model.Where(c => c.Semester != null && c.Semester.ToString()!.ToLower() == "winter").ToList();
+    var summerCourses = Model.Where(c => c.Semester != null && c.Semester.ToString()!.ToLower() == "summer").ToList();
+    
+    
+    
+    
+}
+
+<!doctype html>
+<html lang="mk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+
+    <style>
+        :root{
+            --bg1:#0b1220;
+            --bg2:#0f1b35;
+            --text:#e5e7eb;
+            --muted:#9ca3af;
+            --stroke:rgba(255,255,255,.08);
+            --shadow: 0 25px 60px rgba(0,0,0,.55);
+            --accent:#7c3aed;
+            --accent2:#22c55e;
+            --danger:#ef4444;
+            --radius: 18px;
+        }
+
+        *{ box-sizing:border-box; }
+        html,body{ height:100%; }
+        body{
+            margin:0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+            color: var(--text);
+            background:
+                radial-gradient(900px 600px at 15% 10%, rgba(124,58,237,.25), transparent 60%),
+                radial-gradient(800px 500px at 85% 20%, rgba(34,197,94,.18), transparent 55%),
+                radial-gradient(900px 700px at 55% 90%, rgba(59,130,246,.12), transparent 60%),
+                linear-gradient(180deg, var(--bg1), var(--bg2));
+        }
+
+        .page{
+            max-width: 1100px;
+            margin: 28px auto;
+            padding: 0 16px 40px;
+        }
+
+        .topbar{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+            margin-bottom: 14px;
+        }
+
+        .title{
+            margin:0;
+            font-size: 22px;
+            letter-spacing:.2px;
+        }
+
+        .actions{
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+            justify-content:flex-end;
+        }
+
+        .btn{
+            border:1px solid var(--stroke);
+            background: rgba(15,23,42,.55);
+            color: var(--text);
+            padding: 10px 12px;
+            border-radius: 14px;
+            text-decoration:none;
+            cursor:pointer;
+            transition: transform .12s ease, box-shadow .2s ease, border-color .2s ease, filter .2s ease;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            font-weight: 700;
+        }
+        .btn:hover{
+            transform: translateY(-1px);
+            border-color: rgba(124,58,237,.45);
+            box-shadow: 0 14px 35px rgba(0,0,0,.35);
+            filter: brightness(1.03);
+        }
+        .btn:active{ transform: translateY(0); }
+
+        .btnPrimary{
+            background: linear-gradient(135deg, rgba(124,58,237,.95), rgba(34,197,94,.75));
+            border-color: rgba(255,255,255,.10);
+            color:#fff;
+            box-shadow: 0 18px 35px rgba(124,58,237,.18);
+        }
+
+        .btnDanger{
+            border-color: rgba(239,68,68,.35);
+            background: rgba(239,68,68,.10);
+        }
+
+        .panel{
+            border: 1px solid var(--stroke);
+            background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+            backdrop-filter: blur(14px);
+            box-shadow: var(--shadow);
+            border-radius: var(--radius);
+            overflow:hidden;
+            animation: pop .55s cubic-bezier(.2,.9,.2,1) both;
+        }
+
+        .panel + .panel{ margin-top: 16px; }
+
+        .panelHead{
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--stroke);
+            background: linear-gradient(180deg, rgba(15,23,42,.55), rgba(15,23,42,.25));
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+        }
+
+        .panelTitle{
+            margin:0;
+            font-size: 16px;
+            letter-spacing:.2px;
+        }
+
+        .leftTools{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            flex-wrap:wrap;
+        }
+
+        .filter{
+            border:1px solid var(--stroke);
+            background: rgba(15,23,42,.55);
+            color: var(--text);
+            padding: 10px 12px;
+            border-radius: 14px;
+            outline:none;
+            font-weight: 600;
+        }
+        .filter:focus{
+            border-color: rgba(124,58,237,.6);
+            box-shadow: 0 0 0 6px rgba(124,58,237,.15);
+        }
+
+        .count{
+            font-size: 12px;
+            color: rgba(229,231,235,.85);
+            border: 1px solid var(--stroke);
+            background: rgba(15,23,42,.45);
+            padding: 6px 10px;
+            border-radius: 999px;
+            white-space:nowrap;
+        }
+
+        .panelBody{ padding: 16px 18px 18px; }
+
+        .grid{
+            display:grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        @@media (max-width: 900px){
+            .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @@media (max-width: 560px){
+            .grid{ grid-template-columns: 1fr; }
+            .topbar{ flex-direction:column; align-items:flex-start; }
+            .actions{ width:100%; justify-content:flex-start; }
+            .panelHead{ flex-direction:column; align-items:flex-start; }
+        }
+
+        .card{
+            border: 1px solid var(--stroke);
+            border-radius: var(--radius);
+            background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+            backdrop-filter: blur(14px);
+            box-shadow: 0 18px 45px rgba(0,0,0,.35);
+            overflow:hidden;
+            transition: transform .14s ease, box-shadow .2s ease, border-color .2s ease;
+            animation: fadeUp .55s ease both;
+        }
+        .card:hover{
+            transform: translateY(-2px);
+            border-color: rgba(124,58,237,.35);
+            box-shadow: 0 22px 60px rgba(0,0,0,.45);
+        }
+
+        .cardHead{
+            padding: 14px;
+            border-bottom: 1px solid var(--stroke);
+            display:flex;
+            align-items:flex-start;
+            justify-content:space-between;
+            gap:10px;
+        }
+
+        .courseName{
+            margin:0;
+            font-size: 16px;
+            line-height: 1.2;
+            letter-spacing:.2px;
+            word-break: break-word;
+        }
+
+        .tag{
+            font-size: 12px;
+            color: rgba(229,231,235,.85);
+            border: 1px solid var(--stroke);
+            background: rgba(15,23,42,.45);
+            padding: 6px 10px;
+            border-radius: 999px;
+            white-space:nowrap;
+        }
+
+        .cardBody{
+            padding: 12px 14px 14px;
+            display:flex;
+            justify-content:flex-end;
+        }
+
+        .empty{ color: rgba(156,163,175,.85); margin: 0; }
+
+        .scheduleTable{
+            width:100%;
+            border-collapse: collapse;
+            overflow:hidden;
+        }
+        .scheduleTable th, .scheduleTable td{
+            border: 1px solid rgba(255,255,255,.08);
+        }
+        .scheduleTable thead th{
+            background: rgba(15,23,42,.45);
+            padding: 12px;
+            font-weight: 800;
+            text-align:center;
+        }
+        .timeCol{
+            width:160px;
+            padding: 10px 12px;
+            color: rgba(229,231,235,.85);
+            background: rgba(15,23,42,.35);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .slotCell{
+            height: 56px;
+            position: relative;
+            background: rgba(255,255,255,.02);
+        }
+
+        .event{
+            height: calc(100% - 12px);
+            border-radius: 14px;
+            padding: 10px 10px;
+            margin: 6px;
+            border: 1px solid rgba(124,58,237,.35);
+            background: linear-gradient(180deg, rgba(124,58,237,.25), rgba(124,58,237,.12));
+            box-shadow: 0 12px 28px rgba(0,0,0,.35);
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:10px;
+        }
+
+        .eventName{
+            font-weight: 800;
+            font-size: 13px;
+            line-height: 1.2;
+        }
+        .eventTime{
+            font-size: 12px;
+            color: rgba(229,231,235,.80);
+            border: 1px solid rgba(255,255,255,.10);
+            background: rgba(15,23,42,.35);
+            padding: 4px 8px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        @@keyframes pop{
+            from{ opacity:0; transform: translateY(10px) scale(.98); }
+            to{ opacity:1; transform: translateY(0) scale(1); }
+        }
+        @@keyframes fadeUp{
+            from{ opacity:0; transform: translateY(10px); }
+            to{ opacity:1; transform: translateY(0); }
+        }
+        .scheduleTable{ table-layout: fixed; }
+        .scheduleTable th, .scheduleTable td{ width: 16.6%; }
+        .timeCol{ width: 140px !important; }
+
+        .cardLink{
+            text-decoration:none;
+            color:inherit;
+            display:block;
+        }
+
+        .cardLink .card{
+            cursor:pointer;
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+        }
+
+        .cardLink .card:hover{
+            transform: translateY(-3px);
+            background: rgba(255,255,255,.04);
+            border-color: rgba(124,58,237,.65);
+            box-shadow:
+                0 16px 40px rgba(0,0,0,.45),
+                0 0 0 1px rgba(124,58,237,.25),
+                0 0 28px rgba(124,58,237,.22);
+        }
+        .event{ cursor:pointer; }
+
+        .sessPop{
+            position: fixed;
+            right: 18px;
+            top: 110px;
+            width: 360px;
+            z-index: 9999;
+            border: 1px solid var(--stroke);
+            background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+            backdrop-filter: blur(14px);
+            box-shadow: var(--shadow);
+            border-radius: var(--radius);
+            overflow:hidden;
+            animation: pop .25s ease both;
+        }
+
+        .sessPopHead{
+            display:flex;
+            align-items:flex-start;
+            justify-content:space-between;
+            gap:10px;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--stroke);
+            background: rgba(15,23,42,.35);
+        }
+
+        .sessPopTitle{
+            font-weight: 950;
+            letter-spacing:.2px;
+            font-size: 15px;
+        }
+
+        .sessPopSub{
+            margin-top:2px;
+            color: rgba(229,231,235,.75);
+            font-weight: 650;
+            font-size: 12px;
+        }
+
+        .sessPopClose{
+            border:1px solid var(--stroke);
+            background: rgba(15,23,42,.45);
+            color: var(--text);
+            border-radius: 12px;
+            padding: 6px 10px;
+            cursor:pointer;
+            transition: transform .12s ease, border-color .2s ease;
+        }
+        .sessPopClose:hover{
+            transform: translateY(-1px);
+            border-color: rgba(124,58,237,.45);
+        }
+
+        .sessPopGrid{
+            padding: 14px 16px 16px;
+            display:grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .sessChip{
+            border: 1px solid var(--stroke);
+            background: rgba(255,255,255,.03);
+            color: var(--text);
+            border-radius: 14px;
+            padding: 10px 8px;
+            text-align:center;
+            font-weight: 850;
+            font-size: 12px;
+            line-height: 1.1;
+            cursor:pointer;
+            transition: transform .12s ease, border-color .2s ease, background .2s ease;
+        }
+        .sessChip:hover{
+            transform: translateY(-1px);
+            border-color: rgba(124,58,237,.45);
+            background: rgba(255,255,255,.05);
+        }
+
+        .sessChip .mini{
+            display:block;
+            margin-top:6px;
+            font-weight: 800;
+            font-size: 11px;
+            color: rgba(229,231,235,.78);
+        }
+
+        .sessChip.open{
+            border-color: rgba(124,58,237,.45);
+            background: rgba(124,58,237,.12);
+        }
+
+        .sessChip.used{
+            border-color: rgba(34,197,94,.35);
+            background: rgba(34,197,94,.10);
+        }
+
+        .sessChip.danger{
+            border-color: rgba(239,68,68,.35);
+            background: rgba(239,68,68,.10);
+        }
+
+        @@media (max-width: 720px){
+        .sessPop{
+            left: 16px;
+            right: 16px;
+            width: auto;
+            top: auto;
+            bottom: 16px;
+        }
+        .sessPopGrid{ grid-template-columns: repeat(6, minmax(0, 1fr)); }
+        }
+
+        /* Popover open/close */
+        .popover {
+            transform: translateY(8px) scale(.98);
+            opacity: 0;
+            filter: blur(6px);
+            pointer-events: none;
+            transition: opacity .18s ease, transform .18s ease, filter .18s ease;
+        }
+        .popover.isOpen {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            filter: blur(0);
+            pointer-events: auto;
+        }
+
+        /* Click pulse on chips */
+        .weekChip {
+            position: relative;
+            overflow: hidden;
+            transition: transform .12s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+        .weekChip:active { transform: scale(.98); }
+
+        /* Ripple */
+        .weekChip::after{
+            content:"";
+            position:absolute;
+            inset:0;
+            background: radial-gradient(circle at var(--rx,50%) var(--ry,50%), rgba(124,58,237,.35), transparent 55%);
+            opacity:0;
+            transform: scale(1.1);
+            transition: opacity .25s ease;
+        }
+        .weekChip.isPulse::after{ opacity:1; }
+        .weekChip.isPulse{ box-shadow: 0 0 0 1px rgba(124,58,237,.25), 0 0 28px rgba(124,58,237,.18); }
+    </style>
+</head>
+
+<body>
+<div class="page">
+    <div class="topbar">
+        <h1 class="title">Професор панел</h1>
+
+        <div class="actions">
+            <a class="btn btnPrimary" href="/Professor/Courses">Предмети</a>
+            <a class="btn btnPrimary" href="/Professor/Reports">Reports</a>
+            <form method="post" action="/Account/Logout" style="display:inline;">
+                <button class="btn btnDanger" type="submit">Одјава</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="panel" >
+        <div class="panelHead">
+            <div class="leftTools">
+                <h2 class="panelTitle">Филтер</h2>
+                <select id="semesterFilter" class="filter">
+                    <option value="all">Сите</option>
+                    <option value="winter">Зимски</option>
+                    <option value="summer">Летен</option>
+                </select>
+            </div>
+        </div>
+        <div class="panelBody">
+            <p class="empty" style="margin:0;">Филтерот ги менува и распоредот и листата на предмети.</p>
+        </div>
+    </div>
+
+    <div class="panel" id="schedulePanel">
+        <div class="panelHead">
+            <h2 class="panelTitle">Распоред</h2>
+            <span class="count" id="scheduleCount">0</span>
+        </div>
+
+        <div class="panelBody" style="padding:0;">
+            <!-- ALL => empty table -->
+            <div id="scheduleAll">
+                <table class="scheduleTable">
+                    <thead>
+                    <tr>
+                        <th class="timeCol">Време</th>
+                        @foreach (var d in days) { <th>@d</th> }
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @for (int r = 0; r < slots.Length; r++)
+                    {
+                        <tr>
+                            <td class="timeCol">@F(slots[r].Start) - @F(slots[r].End)</td>
+                            @for (int d = 0; d < 5; d++) { <td class="slotCell"></td> }
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- WINTER table (rowspan) -->
+            <div id="scheduleWinter" style="display:none;">
+                @{
+                    var eventsW = new Dictionary<(int r, int c), (AttendanceStudents.Domain.Entities.Course course, int span)>();
+                    var skipW = new HashSet<(int r, int c)>();
+
+                    foreach (var c in winterCourses)
+                    {
+                        if (c.DayOfWeek == null || c.StartTime == null || c.EndTime == null) continue;
+
+                        var dayCol = DayIndex(c.DayOfWeek);
+                        if (dayCol < 0 || dayCol > 4) continue;
+
+                        var st = ToTimeSpan(c.StartTime);
+                        var en = ToTimeSpan(c.EndTime);
+                        if (st == null || en == null) continue;
+
+                        var startRow = SlotIndexStart(st.Value);
+                        var endRow = SlotIndexEnd(en.Value);
+                        if (startRow < 0 || endRow < 0) continue;
+                        if (endRow < startRow) continue;
+
+                        var span = endRow - startRow + 1;
+                        if (eventsW.ContainsKey((startRow, dayCol))) continue;
+
+                        eventsW[(startRow, dayCol)] = (c, span);
+                        for (int rr = startRow + 1; rr <= endRow; rr++) skipW.Add((rr, dayCol));
+                    }
+                }
+
+                <table class="scheduleTable">
+                    <thead>
+                    <tr>
+                        <th class="timeCol">Време</th>
+                        @foreach (var d in days) { <th>@d</th> }
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    @for (int r = 0; r < slots.Length; r++)
+                    {
+                        <tr>
+                            <td class="timeCol">@F(slots[r].Start) - @F(slots[r].End)</td>
+
+                            @for (int d = 0; d < 5; d++)
+                            {
+                                if (skipW.Contains((r, d))) { continue; }
+
+                                if (eventsW.TryGetValue((r, d), out var ev))
+                                {
+                                    var course = ev.course;
+                                    var span = ev.span;
+                                    var st = ToTimeSpan(course.StartTime)!.Value;
+                                    var en = ToTimeSpan(course.EndTime)!.Value;
+
+                                    <td class="slotCell" rowspan="@span" style="vertical-align: top;">
+                                        <div class="event"
+                                             data-semester="winter"
+                                             data-course-id="@course.Id">
+                                            <div class="eventName">@course.Name</div>
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="slotCell"></td>
+                                }
+                            }
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- SUMMER table (rowspan) -->
+            <div id="scheduleSummer" style="display:none;">
+                @{
+                    var eventsS = new Dictionary<(int r, int c), (AttendanceStudents.Domain.Entities.Course course, int span)>();
+                    var skipS = new HashSet<(int r, int c)>();
+
+                    foreach (var c in summerCourses)
+                    {
+                        if (c.DayOfWeek == null || c.StartTime == null || c.EndTime == null) continue;
+
+                        var dayCol = DayIndex(c.DayOfWeek);
+                        if (dayCol < 0 || dayCol > 4) continue;
+
+                        var st = ToTimeSpan(c.StartTime);
+                        var en = ToTimeSpan(c.EndTime);
+                        if (st == null || en == null) continue;
+
+                        var startRow = SlotIndexStart(st.Value);
+                        var endRow = SlotIndexEnd(en.Value);
+                        if (startRow < 0 || endRow < 0) continue;
+                        if (endRow < startRow) continue;
+
+                        var span = endRow - startRow + 1;
+                        if (eventsS.ContainsKey((startRow, dayCol))) continue;
+
+                        eventsS[(startRow, dayCol)] = (c, span);
+                        for (int rr = startRow + 1; rr <= endRow; rr++) skipS.Add((rr, dayCol));
+                    }
+                }
+
+                <table class="scheduleTable">
+                    <thead>
+                    <tr>
+                        <th class="timeCol">Време</th>
+                        @foreach (var d in days) { <th>@d</th> }
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    @for (int r = 0; r < slots.Length; r++)
+                    {
+                        <tr>
+                            <td class="timeCol">@F(slots[r].Start) - @F(slots[r].End)</td>
+
+                            @for (int d = 0; d < 5; d++)
+                            {
+                                if (skipS.Contains((r, d))) { continue; }
+
+                                if (eventsS.TryGetValue((r, d), out var ev))
+                                {
+                                    var course = ev.course;
+                                    var span = ev.span;
+                                    var st = ToTimeSpan(course.StartTime)!.Value;
+                                    var en = ToTimeSpan(course.EndTime)!.Value;
+
+                                    <td class="slotCell" rowspan="@span" style="vertical-align: top;">
+                                        <div class="event"
+                                             data-semester="summer"
+                                             data-course-id="@course.Id">
+                                            <div class="eventName">@course.Name</div>
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="slotCell"></td>
+                                }
+                            }
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel" id="cardsPanel">
+        <div class="panelHead">
+            <div class="leftTools">
+                <h2 class="panelTitle">Мои предмети</h2>
+            </div>
+            <span class="count" id="countCards">@Model.Count</span>
+        </div>
+
+        <div class="panelBody">
+            @if (!Model.Any())
+            {
+                <p class="empty">Немаш додадено предмети.</p>
+            }
+            else
+            {
+                <div id="gridCards" class="grid">
+                    @foreach (var c in Model)
+                    {
+                        var sem = c.Semester.ToString()?.ToLower() ?? "";
+                   <a class="cardLink"
+                           href="@Url.Action("CourseSessions", "Session", new { courseId = c.Id })">
+
+                   <div class="card" data-semester="@sem">
+                       <div class="cardHead">
+                           <h3 class="courseName">@c.Name</h3>
+                           <span class="tag">@c.Semester</span>
+                       </div>
+                   </div>
+                   </a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+<div id="sessionPopover" class="sessPop" style="display:none;">
+    <div class="sessPopHead">
+        <div>
+            <div class="sessPopTitle" id="sessPopTitle">Предмет</div>
+            <div class="sessPopSub" id="sessPopSub">Брз старт (следна недела ±3)</div>
+        </div>
+        <button type="button" class="sessPopClose" id="sessPopClose">✕</button>
+    </div>
+
+    <div class="sessPopGrid" id="sessPopGrid"></div>
+</div>
+
+<form id="openSessionFormTpl" method="post" asp-controller="Session" asp-action="Open" style="display:none;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="" />
+</form>
+<script>
+(function () {
+    const filter = document.getElementById('semesterFilter');
+
+    const cards = Array.from(document.querySelectorAll('#gridCards .card[data-semester]'));
+    const countCards = document.getElementById('countCards');
+    const visibleCount = document.getElementById('visibleCount');
+    const scheduleCount = document.getElementById('scheduleCount');
+
+    const schedulePanel = document.getElementById('schedulePanel'); 
+    const scheduleAll = document.getElementById('scheduleAll');
+    const scheduleWinter = document.getElementById('scheduleWinter');
+    const scheduleSummer = document.getElementById('scheduleSummer');
+
+    function countEvents(container) {
+        if (!container) return 0;
+        return container.querySelectorAll('.event').length;
+    }
+
+    function defaultSemesterByDate() {
+        // before Feb 1 => winter, Feb 1 or after => summer
+        const now = new Date();
+        const feb1 = new Date(now.getFullYear(), 1, 1); // month index: 1 = February
+        const sep1 = new Date(now.getFullYear(), 9, 1); // month index: 1 = February
+        return (now < feb1) || (now > sep1) ? 'winter' : 'summer';
+    }
+
+    function applyFilter() {
+        const value = (filter.value || 'all').toLowerCase();
+
+        if (schedulePanel) schedulePanel.style.display = (value === 'all') ? 'none' : '';
+
+        if (scheduleAll) scheduleAll.style.display = 'none'; 
+        if (scheduleWinter) scheduleWinter.style.display = (value === 'winter') ? '' : 'none';
+        if (scheduleSummer) scheduleSummer.style.display = (value === 'summer') ? '' : 'none';
+
+        let visible = 0;
+        cards.forEach(c => {
+            const sem = (c.getAttribute('data-semester') || '').toLowerCase();
+            const show = (value === 'all') || (sem === value);
+            c.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+
+        if (countCards) countCards.textContent = visible;
+        if (visibleCount) visibleCount.textContent = visible;
+
+        let sc = 0;
+        if (value === 'winter') sc = countEvents(scheduleWinter);
+        else if (value === 'summer') sc = countEvents(scheduleSummer);
+        else sc = 0;
+
+        if (scheduleCount) scheduleCount.textContent = sc;
+    }
+
+    if (filter) {
+        filter.value = defaultSemesterByDate(); // winter or summer
+        filter.addEventListener('change', applyFilter);
+        applyFilter();
+    }
+    // --- Quick sessions popover (schedule click) ---
+    const pop = document.getElementById('sessionPopover');
+    const popTitle = document.getElementById('sessPopTitle');
+    const popSub = document.getElementById('sessPopSub');
+    const popGrid = document.getElementById('sessPopGrid');
+    const popClose = document.getElementById('sessPopClose');
+    const openFormTpl = document.getElementById('openSessionFormTpl');
+
+    function hidePop(){
+        if(pop) pop.style.display = 'none';
+    }
+    if(popClose) popClose.addEventListener('click', hidePop);
+
+    document.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape') hidePop();
+    });
+
+// close on outside click
+    document.addEventListener('click', (e) => {
+        if(!pop || pop.style.display === 'none') return;
+        const target = e.target;
+        if(pop.contains(target)) return;
+        if(target && target.closest && target.closest('.event[data-course-id]')) return;
+        hidePop();
+    });
+
+// Build a JS map from Razor Model (only needed fields)
+    const courseMap = {
+        @foreach (var c in Model)
+        {
+        var sessions = (c.Sessions ?? new List<AttendanceStudents.Domain.Entities.Session>())
+        .OrderBy(s => s.WeekNumber)
+        .Select(s => new { id = s.Id, week = s.WeekNumber, status = s.Status.ToString(), times = s.TimesOpened })
+        .ToList();
+
+        <text>
+        "@c.Id": {
+            name: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(c.Name)),
+            sessions: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(sessions))
+        },
+        </text>
+        }
+    };
+
+    function renderPopover(courseId){
+        const c = courseMap[courseId];
+        if(!c){ return; }
+
+        const sessions = (c.sessions || []).slice().sort((a,b)=>a.week-b.week);
+
+        // next = first never opened
+        const next = sessions.find(x => (x.times || 0) === 0);
+        const nextWeek = next ? next.week : 12;
+
+        let start = Math.max(1, nextWeek - 3);
+        let end = Math.min(12, nextWeek + 3);
+
+        // if all opened, show last 7 as fallback
+        if(!next){
+            start = Math.max(1, 12 - 6);
+            end = 12;
+        }
+
+        const win = sessions.filter(x => x.week >= start && x.week <= end);
+
+        popTitle.textContent = c.name || "Предмет";
+        popSub.textContent = next ? `Следна недела: ${nextWeek} ` : `Сите недели биле отворени (последни 7)`;
+
+        popGrid.innerHTML = "";
+
+        win.forEach(x => {
+            const chip = document.createElement('div');
+            chip.className = "sessChip";
+            if((x.times || 0) > 0) chip.classList.add('used');
+            if((x.status || "").toLowerCase() === "open") chip.classList.add('open');
+
+            chip.innerHTML = `
+            Нед. ${x.week}
+            <span class="mini">${(x.status || "").toUpperCase()}</span>
+        `;
+
+            // behavior
+            if((x.status || "").toLowerCase() === "open"){
+                chip.addEventListener('click', () => {
+                    window.location.href = '@Url.Action("Details","Session")' + `?id=${x.id}`;
+                });
+            } else {
+                chip.addEventListener('click', () => {
+                    const ok = confirm('Дали сте сигурни дека сакате да ја започнете сесијата?');
+                    if(!ok) return;
+
+                    // submit POST /Session/Open with antiforgery + id
+                    const form = openFormTpl.cloneNode(true);
+                    form.style.display = 'none';
+                    form.querySelector('input[name="id"]').value = x.id;
+                    document.body.appendChild(form);
+                    form.submit();
+                });
+            }
+
+            popGrid.appendChild(chip);
+        });
+
+        pop.style.display = '';
+    }
+
+// attach click handlers to schedule events
+    document.querySelectorAll('.event[data-course-id]').forEach(el => {
+        el.addEventListener('click', () => {
+            const cid = el.getAttribute('data-course-id');
+            if(cid) renderPopover(cid);
+        });
+    });
+    (function () {
+        /* ========= helpers ========= */
+
+        function openPopover(pop) {
+            pop.classList.add('isOpen');
+        }
+
+        function closePopover(pop) {
+            pop.classList.remove('isOpen');
+        }
+
+        function pulse(el, ev) {
+            const r = el.getBoundingClientRect();
+            const x = ((ev?.clientX ?? (r.left + r.width / 2)) - r.left) / r.width * 100;
+            const y = ((ev?.clientY ?? (r.top + r.height / 2)) - r.top) / r.height * 100;
+
+            el.style.setProperty('--rx', `${x}%`);
+            el.style.setProperty('--ry', `${y}%`);
+
+            el.classList.remove('isPulse');
+            void el.offsetWidth; // reflow
+            el.classList.add('isPulse');
+
+            setTimeout(() => el.classList.remove('isPulse'), 260);
+        }
+
+        /* ========= popover logic ========= */
+
+        const popover = document.getElementById('coursePopover');
+        if (!popover) return;
+
+        const titleEl = popover.querySelector('.popTitle');
+        const subtitleEl = popover.querySelector('.popSubtitle');
+        const weeksWrap = popover.querySelector('.weeksWrap');
+        const closeBtn = popover.querySelector('.popClose');
+
+        closeBtn?.addEventListener('click', () => closePopover(popover));
+
+        /* ========= cards click ========= */
+
+        document.querySelectorAll('[data-course-card]').forEach(card => {
+            card.addEventListener('click', () => {
+                const courseId = card.dataset.courseId;
+                const data = window.courseMap?.[courseId];
+                if (!data) return;
+
+                const sessions = data.sessions || [];
+
+                // next unopened
+                const next = sessions.find(s => s.timesOpened === 0);
+
+                titleEl.textContent = data.name;
+
+                if (!next) {
+                    subtitleEl.textContent = 'Сите недели биле отворени';
+                    weeksWrap.innerHTML = '';
+                    openPopover(popover);
+                    return;
+                }
+
+                subtitleEl.textContent = `Следна недела: ${next.weekNumber}`;
+
+                weeksWrap.innerHTML = '';
+
+                // покажи само следната + уште 2 после неа
+                const windowSessions = sessions.filter(s =>
+                    s.weekNumber >= next.weekNumber &&
+                    s.weekNumber <= next.weekNumber + 2
+                );
+
+                windowSessions.forEach(s => {
+                    const chip = document.createElement('a');
+                    chip.className = 'weekChip ' + (s.status === 'Open' ? 'open' : 'closed');
+                    chip.textContent = `Нед. ${s.weekNumber}`;
+
+                    if (s.status === 'Open') {
+                        chip.href = `/Session/Details/${s.id}`;
+                    } else {
+                        chip.href = '#';
+                        chip.addEventListener('click', e => {
+                            e.preventDefault();
+                            pulse(chip, e);
+                        });
+                    }
+
+                    chip.addEventListener('click', e => pulse(chip, e));
+                    weeksWrap.appendChild(chip);
+                });
+
+                openPopover(popover);
+            });
+        });
+
+    })();
+    
+})();
+</script>
+
+</body>
+</html>

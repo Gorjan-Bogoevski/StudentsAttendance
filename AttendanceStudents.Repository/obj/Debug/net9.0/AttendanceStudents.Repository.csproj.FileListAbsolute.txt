@@ -1,0 +1,17 @@
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/bin/Debug/net9.0/AttendanceStudents.Repository.deps.json
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/bin/Debug/net9.0/AttendanceStudents.Repository.dll
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/bin/Debug/net9.0/AttendanceStudents.Repository.pdb
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/bin/Debug/net9.0/AttendanceStudents.Domain.dll
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/bin/Debug/net9.0/AttendanceStudents.Domain.pdb
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/obj/Debug/net9.0/AttendanceStudents.Repository.csproj.AssemblyReference.cache
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/obj/Debug/net9.0/AttendanceStudents.Repository.GeneratedMSBuildEditorConfig.editorconfig
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/obj/Debug/net9.0/AttendanceStudents.Repository.AssemblyInfoInputs.cache
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/obj/Debug/net9.0/AttendanceStudents.Repository.AssemblyInfo.cs
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/obj/Debug/net9.0/AttendanceStudents.Repository.csproj.CoreCompileInputs.cache
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/obj/Debug/net9.0/Attendan.7A0CED3C.Up2Date
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/obj/Debug/net9.0/AttendanceStudents.Repository.dll
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/obj/Debug/net9.0/refint/AttendanceStudents.Repository.dll
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/obj/Debug/net9.0/AttendanceStudents.Repository.pdb
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/obj/Debug/net9.0/ref/AttendanceStudents.Repository.dll
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/bin/Debug/net9.0/AttendanceStudents.Repository.runtimeconfig.json
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/obj/Debug/net9.0/AttendanceStudents.Repository.genruntimeconfig.cache

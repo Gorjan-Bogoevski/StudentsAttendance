@@ -1,0 +1,11 @@
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/bin/Debug/net9.0/AttendanceStudents.Domain.deps.json
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/bin/Debug/net9.0/AttendanceStudents.Domain.dll
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/bin/Debug/net9.0/AttendanceStudents.Domain.pdb
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/obj/Debug/net9.0/AttendanceStudents.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/obj/Debug/net9.0/AttendanceStudents.Domain.AssemblyInfoInputs.cache
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/obj/Debug/net9.0/AttendanceStudents.Domain.AssemblyInfo.cs
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/obj/Debug/net9.0/AttendanceStudents.Domain.csproj.CoreCompileInputs.cache
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/obj/Debug/net9.0/AttendanceStudents.Domain.dll
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/obj/Debug/net9.0/refint/AttendanceStudents.Domain.dll
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/obj/Debug/net9.0/AttendanceStudents.Domain.pdb
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/obj/Debug/net9.0/ref/AttendanceStudents.Domain.dll

@@ -1,0 +1,411 @@
+@using AttendanceStudents.Domain.Entities
+@using AttendanceStudents.Domain.Enums
+@model List<Session>
+
+@{
+ViewData["Title"] = "Сесии";
+Layout = null;
+
+var sessions = (Model ?? new List<Session>()).OrderBy(s => s.WeekNumber).ToList();
+
+Func<int, IEnumerable<Session>> range = (start) =>
+sessions.Where(s => s.WeekNumber >= start && s.WeekNumber <= start + 5);
+
+string StatusLabel(SessionStatus st) => st == SessionStatus.Open ? "OPEN" : "CLOSED";
+
+}
+@functions {
+    string FormatDate(DateOnly? d)
+        => d.HasValue ? d.Value.ToString("dd.MM.yyyy") : "—";
+}
+<!doctype html>
+<html lang="mk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+
+    <style>
+        :root{
+            --bg1:#0b1220;
+            --bg2:#0f1b35;
+            --text:#e5e7eb;
+            --muted:#9ca3af;
+            --stroke:rgba(255,255,255,.08);
+            --shadow: 0 25px 60px rgba(0,0,0,.55);
+            --accent:#7c3aed;
+            --accent2:#22c55e;
+            --danger:#ef4444;
+            --radius: 18px;
+        }
+
+        *{ box-sizing:border-box; }
+        html,body{ height:100%; }
+
+        body{
+            margin:0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+            color: var(--text);
+            background:
+                radial-gradient(900px 600px at 15% 10%, rgba(124,58,237,.25), transparent 60%),
+                radial-gradient(800px 500px at 85% 20%, rgba(34,197,94,.18), transparent 55%),
+                radial-gradient(900px 700px at 55% 90%, rgba(59,130,246,.12), transparent 60%),
+                linear-gradient(180deg, var(--bg1), var(--bg2));
+        }
+
+        .page{
+            max-width: 1100px;
+            margin: 28px auto;
+            padding: 0 16px 40px;
+        }
+
+        .topbar{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+            margin-bottom: 14px;
+        }
+
+        .title{
+            margin:0;
+            font-size: 22px;
+            letter-spacing:.2px;
+            font-weight: 900;
+        }
+
+        .actions{
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+            justify-content:flex-end;
+        }
+
+        .btn{
+            border:1px solid var(--stroke);
+            background: rgba(15,23,42,.55);
+            color: var(--text);
+            padding: 10px 12px;
+            border-radius: 14px;
+            text-decoration:none;
+            cursor:pointer;
+            transition: transform .12s ease, box-shadow .2s ease, border-color .2s ease, filter .2s ease;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            font-weight: 800;
+        }
+        .btn:hover{
+            transform: translateY(-1px);
+            border-color: rgba(124,58,237,.45);
+            box-shadow: 0 14px 35px rgba(0,0,0,.35);
+            filter: brightness(1.03);
+        }
+        .btn:active{ transform: translateY(0); }
+
+        .panel{
+            border: 1px solid var(--stroke);
+            background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+            backdrop-filter: blur(14px);
+            box-shadow: var(--shadow);
+            border-radius: var(--radius);
+            overflow:hidden;
+            animation: pop .55s cubic-bezier(.2,.9,.2,1) both;
+        }
+        .panel + .panel{ margin-top: 16px; }
+
+        .panelHead{
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--stroke);
+            background: linear-gradient(180deg, rgba(15,23,42,.55), rgba(15,23,42,.25));
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+        }
+
+        .panelTitle{
+            margin:0;
+            font-size: 16px;
+            letter-spacing:.2px;
+            font-weight: 900;
+        }
+
+        .count{
+            font-size: 12px;
+            color: rgba(229,231,235,.85);
+            border: 1px solid var(--stroke);
+            background: rgba(15,23,42,.45);
+            padding: 6px 10px;
+            border-radius: 999px;
+            white-space:nowrap;
+            font-weight: 800;
+        }
+
+        .panelBody{ padding: 16px 18px 18px; }
+
+        .grid{
+            display:grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .cardLink{
+            text-decoration:none;
+            color:inherit;
+            display:block;
+        }
+
+        .card{
+            border: 1px solid var(--stroke);
+            border-radius: var(--radius);
+            background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+            backdrop-filter: blur(14px);
+            box-shadow: 0 18px 45px rgba(0,0,0,.35);
+            overflow:hidden;
+            transition: transform .14s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+            animation: fadeUp .55s ease both;
+        }
+
+        .card:hover{
+            transform: translateY(-3px);
+            background: rgba(255,255,255,.04);
+            border-color: rgba(124,58,237,.65);
+            box-shadow:
+                0 22px 60px rgba(0,0,0,.45),
+                0 0 0 1px rgba(124,58,237,.25),
+                0 0 28px rgba(124,58,237,.22);
+        }
+
+        .cardHead{
+            padding: 14px;
+            border-bottom: 1px solid var(--stroke);
+            display:flex;
+            align-items:flex-start;
+            justify-content:space-between;
+            gap:10px;
+        }
+
+        .weekTitle{
+            margin:0;
+            font-size: 16px;
+            line-height: 1.2;
+            letter-spacing:.2px;
+            font-weight: 900;
+            word-break: break-word;
+        }
+
+        .tag{
+            font-size: 12px;
+            color: rgba(229,231,235,.85);
+            border: 1px solid var(--stroke);
+            background: rgba(15,23,42,.45);
+            padding: 6px 10px;
+            border-radius: 999px;
+            white-space:nowrap;
+            font-weight: 900;
+        }
+
+        .tag.open{
+            border-color: rgba(124,58,237,.55);
+            background: rgba(124,58,237,.16);
+        }
+
+        .tag.closed{
+            border-color: rgba(255,255,255,.10);
+            background: rgba(255,255,255,.03);
+            opacity:.95;
+        }
+
+     
+
+        @@media (max-width: 900px){
+            .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @@media (max-width: 560px){
+            .grid{ grid-template-columns: 1fr; }
+            .topbar{ flex-direction:column; align-items:flex-start; }
+            .actions{ width:100%; justify-content:flex-start; }
+        }
+
+        @@keyframes pop{
+            from{ opacity:0; transform: translateY(10px) scale(.98); }
+            to{ opacity:1; transform: translateY(0) scale(1); }
+        }
+        @@keyframes fadeUp{
+            from{ opacity:0; transform: translateY(10px); }
+            to{ opacity:1; transform: translateY(0); }
+        }
+        .cardForm{ margin:0; }
+        .cardBtn{
+            all: unset;
+            display:block;
+            width:100%;
+            cursor:pointer;
+        }
+        .cardBtn:focus-visible .card{
+            outline: 2px solid rgba(124,58,237,.6);
+            outline-offset: 3px;
+            border-radius: var(--radius);
+        }
+        .card.used{
+            border-color: rgba(34,197,94,.35);
+            background: linear-gradient(180deg, rgba(34,197,94,.10), rgba(255,255,255,.03));
+            box-shadow:
+                0 18px 45px rgba(0,0,0,.35),
+                0 0 0 1px rgba(34,197,94,.18),
+                0 0 26px rgba(34,197,94,.12);
+        }
+        .weekDate {
+            font-size: 0.85rem;
+            color: #8a8f98;
+            margin-top: 2px;
+        }
+        .weekInfo{
+            display:flex;
+            flex-direction:column;
+            gap:2px;
+        }
+
+        .weekDate{
+            font-size: 12px;
+            color: rgba(229,231,235,.65);
+            margin: 0; /* важно */
+        }
+    </style>
+</head>
+
+<body>
+<div class="page">
+    <div class="topbar">
+        <h1 class="title">Сесии</h1>
+        <div class="actions">
+            <a class="btn"
+               href="@Url.Action("Index", "Professor")">
+                ← Назад кон предмети
+            </a>
+            </div>
+    </div>
+
+    <div class="panel">
+        <div class="panelHead">
+            <h2 class="panelTitle">1 Колоквиум (Недели 1–6)</h2>
+            <span class="count">
+                @range(1).Count(s => s.TimesOpened > 0) / 6
+            </span>        </div>
+        <div class="panelBody">
+            <div class="grid">
+                @{
+                var i = 0;
+                }
+                @foreach (var s in range(1))
+                {
+                    var usedClass = s.TimesOpened > 0 ? "used" : "";
+
+                    if (s.Status == SessionStatus.Open)
+                    {
+                        <a class="cardLink @(usedClass)" style="animation-delay:@(i * 35)ms"
+                           href="@Url.Action("Details", "Session", new { id = s.Id })">
+                            <div class="card @(usedClass)">
+                                <div class="cardHead">
+                                    <div class="weekInfo">
+                                        <h3 class="weekTitle">Недела @s.WeekNumber</h3>
+                                        <div class="weekDate">@FormatDate(s.SessionDate)</div>
+                                    </div>
+
+                                    <span class="tag open">@StatusLabel(s.Status)</span>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                    else
+                    {
+                        <form class="cardForm @(usedClass)" style="animation-delay:@(i * 35)ms"
+                              method="post" asp-controller="Session" asp-action="Open"
+                              onsubmit="return confirm('Дали сте сигурни дека сакате да ја започнете сесијата?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@s.Id" />
+
+                            <button type="submit" class="cardBtn">
+                                <div class="card @(usedClass)">
+                                    <div class="cardHead">
+                                        <div class="weekInfo">
+                                            <h3 class="weekTitle">Недела @s.WeekNumber</h3>
+                                            <div class="weekDate">@FormatDate(s.SessionDate)</div>
+                                        </div>
+
+                                        <span class="tag closed">@StatusLabel(s.Status)</span>
+                                    </div>
+                                </div>
+                            </button>
+                        </form>
+                    }
+
+                    i++;
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panelHead">
+            <h2 class="panelTitle">2 Колоквиум (Недели 7–12)</h2>
+            <span class="count">
+                @range(7).Count(s => s.TimesOpened > 0) / 6
+            </span>        </div>
+        <div class="panelBody">
+            <div class="grid">
+                @{
+                var j = 0;
+                }
+                @foreach (var s in range(7))
+                {
+                    var usedClass = s.TimesOpened > 0 ? "used" : "";
+
+                    if (s.Status == SessionStatus.Open)
+                    {
+                        <a class="cardLink @(usedClass)" style="animation-delay:@(j * 35)ms"
+                           href="@Url.Action("Details", "Session", new { id = s.Id })">
+                            <div class="card @(usedClass)">
+                                <div class="cardHead">
+                                    <div class="weekInfo">
+                                        <h3 class="weekTitle">Недела @s.WeekNumber</h3>
+                                        <div class="weekDate">@FormatDate(s.SessionDate)</div>
+                                    </div>
+
+                                    <span class="tag open">@StatusLabel(s.Status)</span>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                    else
+                    {
+                        <form class="cardForm @(usedClass)" style="animation-delay:@(j * 35)ms"
+                              method="post" asp-controller="Session" asp-action="Open"
+                              onsubmit="return confirm('Дали сте сигурни дека сакате да ја започнете сесијата?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@s.Id" />
+
+                            <button type="submit" class="cardBtn">
+                                <div class="card @(usedClass)">
+                                    <div class="cardHead">
+                                        <div class="weekInfo">
+                                            <h3 class="weekTitle">Недела @s.WeekNumber</h3>
+                                            <div class="weekDate">@FormatDate(s.SessionDate)</div>
+                                        </div>
+
+                                        <span class="tag closed">@StatusLabel(s.Status)</span>
+                                    </div>
+                                </div>
+                            </button>
+                        </form>
+                    }
+
+                    j++;
+                }
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

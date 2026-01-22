@@ -1,0 +1,17 @@
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/bin/Debug/net9.0/AttendanceStudents.Service.deps.json
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/bin/Debug/net9.0/AttendanceStudents.Service.dll
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/bin/Debug/net9.0/AttendanceStudents.Service.pdb
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/bin/Debug/net9.0/AttendanceStudents.Domain.dll
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/bin/Debug/net9.0/AttendanceStudents.Repository.dll
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/bin/Debug/net9.0/AttendanceStudents.Domain.pdb
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/bin/Debug/net9.0/AttendanceStudents.Repository.pdb
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/obj/Debug/net9.0/AttendanceStudents.Service.csproj.AssemblyReference.cache
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/obj/Debug/net9.0/AttendanceStudents.Service.GeneratedMSBuildEditorConfig.editorconfig
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/obj/Debug/net9.0/AttendanceStudents.Service.AssemblyInfoInputs.cache
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/obj/Debug/net9.0/AttendanceStudents.Service.AssemblyInfo.cs
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/obj/Debug/net9.0/AttendanceStudents.Service.csproj.CoreCompileInputs.cache
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/obj/Debug/net9.0/Attendan.580A6633.Up2Date
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/obj/Debug/net9.0/AttendanceStudents.Service.dll
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/obj/Debug/net9.0/refint/AttendanceStudents.Service.dll
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/obj/Debug/net9.0/AttendanceStudents.Service.pdb
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/obj/Debug/net9.0/ref/AttendanceStudents.Service.dll

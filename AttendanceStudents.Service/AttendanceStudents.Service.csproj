@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AttendanceStudents.Domain\AttendanceStudents.Domain.csproj" />
+      <ProjectReference Include="..\AttendanceStudents.Repository\AttendanceStudents.Repository.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="QRCoder" Version="1.7.0" />
+    </ItemGroup>
+
+</Project>

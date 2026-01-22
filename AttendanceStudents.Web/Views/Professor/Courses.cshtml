@@ -1,0 +1,395 @@
+@model List<AttendanceStudents.Domain.Entities.Course>
+
+@{
+Layout = null;
+ViewData["Title"] = "Предмети";
+
+var isAdmin = (bool)(ViewBag.IsAdmin ?? false);
+var myIds = ViewBag.MyCourseIds as HashSet<Guid> ?? new HashSet<Guid>();
+}
+
+<!doctype html>
+<html lang="mk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+
+    <style>
+        :root{
+            --bg1:#0b1220;
+            --bg2:#0f1b35;
+            --text:#e5e7eb;
+            --muted:#9ca3af;
+            --stroke:rgba(255,255,255,.08);
+            --shadow: 0 25px 60px rgba(0,0,0,.55);
+            --accent:#7c3aed;
+            --accent2:#22c55e;
+            --danger:#ef4444;
+            --radius: 18px;
+
+            /* highlight for "my courses" */
+            --mineBorder: rgba(34,197,94,.40);
+            --mineGlow: rgba(34,197,94,.16);
+        }
+
+        *{ box-sizing:border-box; }
+        html,body{ height:100%; }
+        body{
+            margin:0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+            color: var(--text);
+            background:
+                radial-gradient(900px 600px at 15% 10%, rgba(124,58,237,.25), transparent 60%),
+                radial-gradient(800px 500px at 85% 20%, rgba(34,197,94,.18), transparent 55%),
+                radial-gradient(900px 700px at 55% 90%, rgba(59,130,246,.12), transparent 60%),
+                linear-gradient(180deg, var(--bg1), var(--bg2));
+        }
+
+        .page{
+            max-width: 1100px;
+            margin: 28px auto;
+            padding: 0 16px 40px;
+        }
+
+        .topbar{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+            margin-bottom: 14px;
+        }
+
+        .title{
+            margin:0;
+            font-size: 22px;
+            letter-spacing:.2px;
+        }
+
+        .actions{
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+            justify-content:flex-end;
+        }
+
+        .btn{
+            border:1px solid var(--stroke);
+            background: rgba(15,23,42,.55);
+            color: var(--text);
+            padding: 10px 12px;
+            border-radius: 14px;
+            text-decoration:none;
+            cursor:pointer;
+            transition: transform .12s ease, box-shadow .2s ease, border-color .2s ease, filter .2s ease;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            font-weight: 700;
+        }
+        .btn:hover{
+            transform: translateY(-1px);
+            border-color: rgba(124,58,237,.45);
+            box-shadow: 0 14px 35px rgba(0,0,0,.35);
+            filter: brightness(1.03);
+        }
+        .btn:active{ transform: translateY(0); }
+
+        .btnPrimary{
+            background: linear-gradient(135deg, rgba(124,58,237,.95), rgba(34,197,94,.75));
+            border-color: rgba(255,255,255,.10);
+            color:#fff;
+            box-shadow: 0 18px 35px rgba(124,58,237,.18);
+        }
+
+        .btnDanger{
+            border-color: rgba(239,68,68,.35);
+            background: rgba(239,68,68,.10);
+        }
+
+        /* smaller admin buttons */
+        .btnSmall{
+            padding: 7px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .panel{
+            border: 1px solid var(--stroke);
+            background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+            backdrop-filter: blur(14px);
+            box-shadow: var(--shadow);
+            border-radius: var(--radius);
+            overflow:hidden;
+            animation: pop .55s cubic-bezier(.2,.9,.2,1) both;
+        }
+
+        .panelHead{
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--stroke);
+            background: linear-gradient(180deg, rgba(15,23,42,.55), rgba(15,23,42,.25));
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+        }
+
+        .leftTools{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            flex-wrap:wrap;
+        }
+
+        .filter{
+            border:1px solid var(--stroke);
+            background: rgba(15,23,42,.55);
+            color: var(--text);
+            padding: 10px 12px;
+            border-radius: 14px;
+            outline:none;
+            font-weight: 600;
+        }
+        .filter:focus{
+            border-color: rgba(124,58,237,.6);
+            box-shadow: 0 0 0 6px rgba(124,58,237,.15);
+        }
+
+        .count{
+            font-size: 12px;
+            color: rgba(229,231,235,.85);
+            border: 1px solid var(--stroke);
+            background: rgba(15,23,42,.45);
+            padding: 6px 10px;
+            border-radius: 999px;
+            white-space:nowrap;
+        }
+
+        .panelBody{ padding: 16px 18px 18px; }
+
+        .grid{
+            display:grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+        @@media (max-width: 900px){
+            .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @@media (max-width: 560px){
+            .grid{ grid-template-columns: 1fr; }
+            .topbar{ flex-direction:column; align-items:flex-start; }
+            .actions{ width:100%; justify-content:flex-start; }
+            .panelHead{ flex-direction:column; align-items:flex-start; }
+        }
+
+        .card{
+            border: 1px solid var(--stroke);
+            border-radius: var(--radius);
+            background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+            backdrop-filter: blur(14px);
+            box-shadow: 0 18px 45px rgba(0,0,0,.35);
+            overflow:hidden;
+            transition: transform .14s ease, box-shadow .2s ease, border-color .2s ease;
+            animation: fadeUp .55s ease both;
+        }
+        .card:hover{
+            transform: translateY(-2px);
+            border-color: rgba(124,58,237,.35);
+            box-shadow: 0 22px 60px rgba(0,0,0,.45);
+        }
+
+        .card.mine{
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(34,197,94,.22),
+                    rgba(34,197,94,.12)
+                );
+            border-color: rgba(34,197,94,.55);
+            box-shadow:
+                0 18px 45px rgba(0,0,0,.40),
+                0 0 0 6px rgba(34,197,94,.20);
+        }
+
+        .cardHead{
+            padding: 14px;
+            border-bottom: 1px solid var(--stroke);
+            display:flex;
+            align-items:flex-start;
+            justify-content:space-between;
+            gap:10px;
+        }
+
+        .courseName{
+            margin:0;
+            font-size: 16px;
+            line-height: 1.2;
+            letter-spacing:.2px;
+            word-break: break-word;
+        }
+
+        .tag{
+            font-size: 12px;
+            color: rgba(229,231,235,.85);
+            border: 1px solid var(--stroke);
+            background: rgba(15,23,42,.45);
+            padding: 6px 10px;
+            border-radius: 999px;
+            white-space:nowrap;
+        }
+
+        .cardBody{
+            padding: 12px 14px 14px;
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+            align-items:center;
+            justify-content:flex-end;
+        }
+
+        .empty{ color: rgba(156,163,175,.85); margin: 0; }
+
+        @@keyframes pop{
+            from{ opacity:0; transform: translateY(10px) scale(.98); }
+            to{ opacity:1; transform: translateY(0) scale(1); }
+        }
+
+        @@keyframes fadeUp{
+            from{ opacity:0; transform: translateY(10px); }
+            to{ opacity:1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+<div class="page">
+    <div class="topbar">
+        <h1 class="title">Предмети</h1>
+
+        <div class="actions">
+            <a class="btn btnPrimary" href="/Professor">Почетна</a>
+
+            @if (isAdmin)
+            {
+            <a class="btn" href="/Professor/CreateCourse">Додади предмет</a>
+            }
+
+            <form method="post" action="/Account/Logout" style="display:inline;">
+                <button class="btn btnDanger" type="submit">Одјава</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panelHead">
+            <div class="leftTools">
+                <select id="semesterFilter" class="filter">
+                    <option value="all">Сите предмети</option>
+                    <option value="winter">Зимски</option>
+                    <option value="summer">Летен</option>
+                </select>
+
+                <select id="mineFilter" class="filter">
+                    <option value="all">Сите</option>
+                    <option value="mine">Само мои</option>
+                    <option value="notmine">Не се мои</option>
+                </select>
+            </div>
+
+            <span id="count" class="count">@Model.Count</span>
+        </div>
+
+        <div class="panelBody">
+            @if (!Model.Any())
+            {
+            <p class="empty">Нема внесени предмети.</p>
+            }
+            else
+            {
+            <div id="grid" class="grid">
+                @foreach (var c in Model)
+                {
+                var sem = c.Semester.ToString().ToLower(); // "winter"/"summer"
+                var isMine = myIds.Contains(c.Id);
+
+                <div class="card @(isMine ? "mine" : "")"
+                     data-semester="@sem"
+                     data-mine="@(isMine ? "mine" : "notmine")">
+                    <div class="cardHead">
+                        <h3 class="courseName">@c.Name</h3>
+                        <span class="tag">@c.Semester</span>
+                    </div>
+
+                    <div class="cardBody">
+                        @if (!isMine)
+                        {
+                        <form method="post" action="/Professor/AddToMyCourses/@c.Id" style="display:inline;">
+                            <button class="btn btnPrimary" type="submit">Додади</button>
+                        </form>
+                        }
+                        else
+                        {
+                        <form method="post" action="/Professor/RemoveFromMyCourses/@c.Id" style="display:inline;">
+                            <button class="btn btnDanger" type="submit"
+                                    onclick="return confirm('Да го тргнам предметот од твоите предмети?')">
+                                Тргни
+                            </button>
+                        </form>
+                        }
+
+                        @if (isAdmin)
+                        {
+                        <a class="btn btnSmall" href="/Professor/EditCourse/@c.Id">Edit</a>
+
+                        <form method="post" action="/Professor/DeleteCourse/@c.Id" style="display:inline;">
+                            <button class="btn btnDanger btnSmall" type="submit"
+                                    onclick="return confirm('Дали сигурно сакаш да го избришеш предметот?')">
+                                Delete
+                            </button>
+                        </form>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const semFilter = document.getElementById('semesterFilter');
+        const mineFilter = document.getElementById('mineFilter');
+        const cards = Array.from(document.querySelectorAll('.card[data-semester]'));
+        const count = document.getElementById('count');
+
+        function apply() {
+            const sem = (semFilter.value || 'all').toLowerCase();
+            const mine = (mineFilter.value || 'all').toLowerCase();
+            let visible = 0;
+
+            cards.forEach(card => {
+                const cardSem = (card.getAttribute('data-semester') || '').toLowerCase();
+                const cardMine = (card.getAttribute('data-mine') || '').toLowerCase();
+
+                const semOk = (sem === 'all') || (cardSem === sem);
+                const mineOk = (mine === 'all') || (cardMine === mine);
+
+                const show = semOk && mineOk;
+                card.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+
+            if (count) count.textContent = visible;
+        }
+
+        semFilter.addEventListener('change', apply);
+        mineFilter.addEventListener('change', apply);
+        apply();
+    })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,442 @@
+@using AttendanceStudents.Domain.Enums
+@model AttendanceStudents.Domain.Entities.Session
+
+@{
+    ViewData["Title"] = "Сесија – Недела " + Model.WeekNumber;
+    Layout = null;
+    
+    var attendanceCount = ViewBag.AttendanceCount ?? 0; // ако подоцна додадеш count во controller
+}
+@functions{
+    string FormatDate(DateOnly? d) => d.HasValue ? d.Value.ToString("dd.MM.yyyy") : "";
+}
+<!doctype html>
+<html lang="mk">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>@ViewData["Title"]</title>
+
+    <style>
+        :root{
+            --bg1:#0b1220; --bg2:#0f1b35; --text:#e5e7eb; --muted:#9ca3af;
+            --stroke:rgba(255,255,255,.08); --shadow:0 25px 60px rgba(0,0,0,.55);
+            --accent:#7c3aed; --danger:#ef4444; --radius:18px;
+        }
+        *{ box-sizing:border-box; }
+        body{
+            margin:0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+            color:var(--text);
+            background:
+                radial-gradient(900px 600px at 15% 10%, rgba(124,58,237,.25), transparent 60%),
+                radial-gradient(800px 500px at 85% 20%, rgba(34,197,94,.18), transparent 55%),
+                radial-gradient(900px 700px at 55% 90%, rgba(59,130,246,.12), transparent 60%),
+                linear-gradient(180deg, var(--bg1), var(--bg2));
+        }
+        .page{ max-width: 900px; margin: 28px auto; padding: 0 16px 40px; }
+        .topbar{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+        .title{ margin:0; font-size:22px; letter-spacing:.2px; font-weight:900; }
+        .btn{
+            border:1px solid var(--stroke);
+            background: rgba(15,23,42,.55);
+            color: var(--text);
+            padding: 10px 12px;
+            border-radius: 14px;
+            text-decoration:none;
+            cursor:pointer;
+            font-weight: 800;
+            transition: transform .12s ease, box-shadow .2s ease, border-color .2s ease;
+        }
+        .btn:hover{ transform: translateY(-1px); border-color: rgba(124,58,237,.45); box-shadow: 0 14px 35px rgba(0,0,0,.35); }
+        .btnDanger{ border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.10); }
+        .panel{
+            border:1px solid var(--stroke);
+            background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+            backdrop-filter: blur(14px);
+            box-shadow: var(--shadow);
+            border-radius: var(--radius);
+            overflow:hidden;
+        }
+        .panel + .panel{ margin-top:16px; }
+        .panelHead{ padding:14px 18px; border-bottom:1px solid var(--stroke);
+            background: linear-gradient(180deg, rgba(15,23,42,.55), rgba(15,23,42,.25));
+            display:flex; align-items:center; justify-content:space-between; gap:12px;
+        }
+        .panelTitle{ margin:0; font-size:16px; font-weight:900; letter-spacing:.2px; }
+        .pill{
+            font-size:12px; font-weight:900;
+            padding:6px 10px; border-radius:999px;
+            border:1px solid rgba(255,255,255,.10);
+            background: rgba(15,23,42,.45);
+        }
+        .pill.open{ border-color: rgba(124,58,237,.55); background: rgba(124,58,237,.16); }
+        .pill.closed{ opacity:.9; }
+        .panelBody{ padding:16px 18px 18px; }
+        .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
+        @@media (max-width:700px){ .grid2{ grid-template-columns:1fr; } }
+        .box{
+            border:1px solid rgba(255,255,255,.10);
+            background: rgba(255,255,255,.03);
+            border-radius: 16px;
+            padding: 14px;
+        }
+        .bigCode{
+            font-size: 34px;
+            font-weight: 950;
+            letter-spacing: 2px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border:1px solid rgba(124,58,237,.45);
+            background: rgba(124,58,237,.14);
+            display:inline-block;
+            margin-top: 8px;
+        }
+        .muted{ color: rgba(229,231,235,.75); font-weight:650; font-size:13px; }
+        .stat{ font-weight:900; font-size:18px; margin-top:6px; }
+        .qr{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding: 10px 0;
+        }
+
+        .qrWrap{
+            background: linear-gradient(
+                180deg,
+                rgba(255,255,255,.08),
+                rgba(255,255,255,.03)
+            );
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 22px;
+            padding: 18px 20px 14px;
+            box-shadow:
+                0 20px 50px rgba(0,0,0,.45),
+                inset 0 0 0 1px rgba(255,255,255,.04);
+            text-align:center;
+            animation: qrPop .45s cubic-bezier(.2,.9,.2,1) both;
+        }
+
+        /* Бел „платнен“ background за QR */
+        .qrWrap img{
+            background:#fff;
+            padding: 14px;
+            border-radius: 18px;
+            width: 180px;
+            height: 180px;
+            box-shadow: 0 12px 30px rgba(0,0,0,.35);
+        }
+
+        /* Текст под QR */
+        .qrHint{
+            margin-top: 12px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: .4px;
+            color: rgba(229,231,235,.9);
+        }
+
+        /* Анимација */
+        @@keyframes qrPop{
+            from{
+                opacity:0;
+                transform: translateY(10px) scale(.96);
+            }
+            to{
+                opacity:1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .titleWrap{ display:flex; flex-direction:column; gap:2px; }
+        .subtitle{
+            color: rgba(229,231,235,.70);
+            font-weight: 750;
+            font-size: 13px;
+        }
+        .studentsList{
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+        }
+
+        .stRow{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+            padding: 12px 12px;
+            border-radius: 14px;
+            border:1px solid rgba(255,255,255,.10);
+            background: rgba(15,23,42,.40);
+            box-shadow: 0 12px 26px rgba(0,0,0,.25);
+            animation: fadeUp .35s ease both;
+        }
+
+        .stLeft{
+            display:flex;
+            flex-direction:column;
+            gap:2px;
+            min-width: 0;
+        }
+
+        .stName{
+            font-weight: 900;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .studentsList{
+            margin-top: 12px;
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+
+            max-height: 220px;     /* фиксна висина */
+            overflow-y: auto;      /* SCROLL */
+            padding-right: 6px;
+        }
+
+        /* убав scrollbar */
+        .studentsList::-webkit-scrollbar{
+            width: 6px;
+        }
+        .studentsList::-webkit-scrollbar-thumb{
+            background: rgba(255,255,255,.18);
+            border-radius: 6px;
+        }
+        .studentsList::-webkit-scrollbar-track{
+            background: transparent;
+        }
+    </style>
+</head>
+
+<body>
+<div class="page">
+    <div class="topbar">
+        <div class="titleWrap">
+            <h1 class="title">Сесија – Недела @Model.WeekNumber</h1>
+
+            @if (Model.SessionDate.HasValue)
+            {
+                <div class="subtitle">@FormatDate(Model.SessionDate)</div>
+            }
+        </div>
+        <a class="btn"
+           href="@Url.Action("CourseSessions", "Session", new { courseId = Model.CourseId })">
+            ← Назад кон сесиите
+        </a>
+    </div>
+  
+    <div class="panel">
+        <div class="panelHead">
+            <h2 class="panelTitle">Статус</h2>
+            <span class="pill @(Model.Status == SessionStatus.Open ? "open" : "closed")">@Model.Status</span>
+        </div>
+
+        <div class="panelBody">
+            <div class="grid2">
+                <div class="box">
+                    <div class="muted">Преостанато време</div>
+                  
+                    <div class="stat" id="remaining">—</div>
+
+                    <div class="muted" style="margin-top:10px;">Најавени студенти</div>
+                    <div class="stat" id="attendanceCount">@attendanceCount</div>
+                    <div id="studentsList" class="studentsList">
+                    </div>
+                </div>
+
+                <div class="box">
+                    <div class="muted">QR / Код за најава</div>
+
+                    <div class="qr">
+                        <div class="qrWrap">
+                            <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+                                 alt="QR code"
+                                 id="qrImage" />
+                            <div class="qrHint" id="qrHint">Се вчитува QR...</div>
+                        </div>
+                    </div>
+
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panelHead">
+            <h2 class="panelTitle">Акции</h2>
+        </div>
+        <div class="panelBody">
+            @if (Model.Status == SessionStatus.Open)
+            {
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+                    @Html.AntiForgeryToken()
+
+                    <button type="button" class="btn actionLeft" id="minus1">− 1 мин</button>
+                    <button type="button" class="btn actionLeft" id="plus1">+ 1 мин</button>
+                    <form id="minusForm" method="post" asp-controller="Session" asp-action="MinusMinute" style="display:none;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                    </form>
+
+                    <form id="plusForm" method="post" asp-controller="Session" asp-action="PlusMinute" style="display:none;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                    </form>
+                    <form method="post" asp-controller="Session" asp-action="Close">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button class="btn btnDanger actionRight" type="submit">Затвори сесија</button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <div class="muted">Сесијата е затворена. Отвори ја од листата на сесии.</div>
+            }
+        </div>
+        
+    </div>
+</div>
+<script>
+(function () {
+  const sessionId = "@Model.Id";
+  const remainingEl = document.getElementById("remaining");
+  const qrImg = document.getElementById("qrImage");
+  const countEl = document.getElementById("attendanceCount");
+  const liveUrl = "@Url.Action("LiveInfo","Session")";
+    const qrHintEl = document.getElementById("qrHint");
+
+  // NEW: students UI
+  const studentsListEl = document.getElementById("studentsList");
+  if (!remainingEl) return;
+
+  // init dataset (за да не е undefined)
+  remainingEl.dataset.isOpen = "false";
+  remainingEl.dataset.endsAtMs = "0";
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, (m) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+
+  function renderRemaining() {
+    const isOpen = (remainingEl.dataset.isOpen === "true");
+    const endsAtMs = parseInt(remainingEl.dataset.endsAtMs || "0", 10);
+
+    if (!isOpen || !endsAtMs || endsAtMs <= 0) {
+      remainingEl.textContent = "—";
+      return;
+    }
+
+    const now = Date.now();
+    const diff = Math.floor((endsAtMs - now) / 1000);
+
+    if (diff <= 0) {
+      remainingEl.textContent = "Истечено";
+      return;
+    }
+
+    const mm = String(Math.floor(diff / 60)).padStart(2, "0");
+    const ss = String(diff % 60).padStart(2, "0");
+    remainingEl.textContent = `${mm}:${ss}`;
+  }
+
+  // Buttons +/- 1 min
+  (function () {
+    const minusBtn = document.getElementById("minus1");
+    const plusBtn  = document.getElementById("plus1");
+
+    const minusForm = document.getElementById("minusForm");
+    const plusForm  = document.getElementById("plusForm");
+
+    if (minusBtn && minusForm) {
+      minusBtn.addEventListener("click", () => {
+        console.log("[UI] minus clicked");
+        minusForm.submit();
+      });
+    }
+
+    if (plusBtn && plusForm) {
+      plusBtn.addEventListener("click", () => {
+        console.log("[UI] plus clicked");
+        plusForm.submit();
+      });
+    }
+  })();
+
+  function renderStudents(list) {
+    if (!studentsListEl) return;
+
+    const arr = Array.isArray(list) ? list : [];
+
+    studentsListEl.innerHTML = arr.map((s, idx) => `
+      <div class="stRow" style="animation-delay:${idx * 25}ms">
+        <div class="stLeft">
+          <div class="stName">${escapeHtml(s.fullName || "")}</div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+    async function refresh() {
+        try {
+            const res = await fetch(`${liveUrl}?id=${sessionId}`, {
+                cache: "no-store",
+                credentials: "same-origin"
+            });
+
+            const ct = (res.headers.get("content-type") || "").toLowerCase();
+            if (!ct.includes("application/json")) return;
+
+            const data = await res.json();
+            
+            if (!data.isOpen) {
+                if (qrHintEl) qrHintEl.textContent = "QR кодот е неактивен";
+                if (qrImg) qrImg.style.opacity = "0.25";
+            } else {
+                if (qrHintEl) qrHintEl.textContent = "Скенирај за најава";
+                if (qrImg) qrImg.style.opacity = "1";
+            }
+            
+            const isOpen = !!data.isOpen;
+            const endsAtMs = Number(data.sessionEndsAtMs || 0);
+
+            remainingEl.dataset.isOpen = String(isOpen);
+            remainingEl.dataset.endsAtMs = String(endsAtMs);
+
+            // count секогаш (и кога е closed)
+            if (countEl && typeof data.attendanceCount === "number") {
+                countEl.textContent = data.attendanceCount;
+            }
+
+            // students секогаш (и кога е closed)
+            renderStudents(data.students);
+
+            // QR само ако е open, инаку исчисти го
+            if (qrImg) {
+                if (qrImg && isOpen && data.qrCodeBase64) {
+                    qrImg.src = data.qrCodeBase64;
+                } else {
+                    qrImg.removeAttribute("src"); // или: qrImg.src = "";
+                }
+            }
+
+            renderRemaining();
+        } catch (e) {
+            console.log("[JS] refresh error", e);
+        }
+    }
+
+  refresh();
+  setInterval(refresh, 50000);        // QR + count + students refresh
+  setInterval(renderRemaining, 1000); // smooth timer
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+@model AttendanceStudents.Domain.Entities.Course
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Додади предмет";
+}
+
+<!doctype html>
+<html lang="mk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>@ViewData["Title"]</title>
+
+<style>
+    :root{
+        --bg1:#0b1220; --bg2:#0f1b35; --text:#e5e7eb; --muted:#9ca3af;
+        --stroke:rgba(255,255,255,.08); --shadow: 0 25px 60px rgba(0,0,0,.55);
+        --accent:#7c3aed; --accent2:#22c55e; --danger:#ef4444; --radius: 18px;
+    }
+
+    *{ box-sizing:border-box }
+    body{
+        margin:0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+        color: var(--text);
+        background:
+            radial-gradient(900px 600px at 15% 10%, rgba(124,58,237,.25), transparent 60%),
+            radial-gradient(800px 500px at 85% 20%, rgba(34,197,94,.18), transparent 55%),
+            linear-gradient(180deg, var(--bg1), var(--bg2));
+        min-height:100vh;
+        display:grid;
+        place-items:center;
+        padding:24px;
+    }
+
+    .card{
+        width:min(520px, 100%);
+        border:1px solid var(--stroke);
+        border-radius: var(--radius);
+        background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+        backdrop-filter: blur(14px);
+        box-shadow: var(--shadow);
+        animation: pop .5s ease both;
+    }
+
+    .head{
+        padding:18px;
+        border-bottom:1px solid var(--stroke);
+        font-size:18px;
+        font-weight:600;
+    }
+
+    .body{ padding:18px }
+
+    .field{ margin-bottom:14px }
+    label{ font-size:13px; color:var(--muted) }
+
+    input, select{
+        width:100%;
+        margin-top:6px;
+        padding:12px;
+        border-radius:14px;
+        border:1px solid var(--stroke);
+        background: rgba(15,23,42,.55);
+        color:var(--text);
+        outline:none;
+    }
+
+    input:focus, select:focus{
+        border-color: rgba(124,58,237,.6);
+        box-shadow: 0 0 0 6px rgba(124,58,237,.15);
+    }
+
+    .actions{
+        display:flex;
+        gap:10px;
+        margin-top:18px;
+        justify-content:flex-end;
+    }
+
+    .btn{
+        padding:10px 14px;
+        border-radius:14px;
+        border:1px solid var(--stroke);
+        background: rgba(15,23,42,.55);
+        color:var(--text);
+        cursor:pointer;
+    }
+
+    .btnPrimary{
+        background: linear-gradient(135deg, rgba(124,58,237,.95), rgba(34,197,94,.75));
+        color:#fff;
+        border:none;
+    }
+
+    @@keyframes pop{
+        from{ opacity:0; transform: translateY(10px) scale(.98); }
+        to{ opacity:1; transform: translateY(0) scale(1); }
+    }
+</style>
+</head>
+
+<body>
+<form method="post" class="card">
+    <div class="head">➕ Додади предмет</div>
+
+    <div class="body">
+        <div class="field">
+            <label>Име на предмет</label>
+            <input asp-for="Name" placeholder="Пр. Веб програмирање" required />
+        </div>
+
+        <div class="field">
+            <label>Семестар</label>
+            <select asp-for="Semester"
+                    asp-items="Html.GetEnumSelectList<AttendanceStudents.Domain.Enums.SemesterType>()">
+            </select>
+        </div>
+        <div class="field">
+            <label for="WeeksCount">Број на недели (сесии)</label>
+            <input asp-for="WeeksCount"
+                   type="number"
+                   min="1"
+                   max="30"
+                   required />
+            <small class="muted">
+                Колку недели ќе трае предметот (пример: 8, 12, 15)
+            </small>
+        </div>
+
+        <div class="field">
+            <label>Ден (опционално)</label>
+            <select asp-for="DayOfWeek"
+                    asp-items="Html.GetEnumSelectList<AttendanceStudents.Domain.Enums.WeekDay>()">
+                <option value="">-- без ден --</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Почеток (опционално)</label>
+            <input asp-for="StartTime" type="time" />
+        </div>
+
+        <div class="field">
+            <label>Крај (опционално)</label>
+            <input asp-for="EndTime" type="time" />
+        </div>
+
+        <div class="actions">
+            <a class="btn" href="/Professor/Courses">Откажи</a>
+            <button class="btn btnPrimary" type="submit">Зачувај</button>
+        </div>
+    </div>
+</form>
+</body>
+</html>
