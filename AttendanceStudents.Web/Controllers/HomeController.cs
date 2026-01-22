@@ -1,11 +1,18 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using AttendanceStudents.Domain;
+using AttendanceStudents.Repository;
 
 namespace AttendanceStudents.Web.Controllers;
 
 public class HomeController : Controller
+
 {
+    private readonly ApplicationDbContext _context;
+    public HomeController(ApplicationDbContext context)
+    {
+        _context = context;
+    }
     public IActionResult Index()
     {
         if (HttpContext.Session.GetString("UserId") == null)
@@ -39,5 +46,15 @@ public class HomeController : Controller
             return RedirectToAction("Index", "Professor");
 
         return View();
+    }
+    [HttpGet]
+    public IActionResult DbCheck()
+    {
+        var users = _context.Users.Count();
+        var courses = _context.Courses.Count();
+        var sessions = _context.Sessions.Count();
+        var attendances = _context.Attendances.Count();
+
+        return Json(new { users, courses, sessions, attendances });
     }
 }
