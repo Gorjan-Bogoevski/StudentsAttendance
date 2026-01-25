@@ -300,7 +300,9 @@ public class SessionService : ISessionService
     _sessionRepo.Update(session); 
     
     // var joinUrl = $"http://192.168.1.146:5035/Attendance/Join?sessionId={session.Id}&code={rawCode}";
-    // var qr = _qrCodeService.GeneratePngDataUri(joinUrl);
+    var baseUrl = "https://119d823f6e2d.ngrok-free.app";
+    var joinUrl = $"{baseUrl}/Attendance/Join?sessionId={session.Id}&code={rawCode}";
+    var qr = _qrCodeService.GeneratePngDataUri(joinUrl);
 
     return new SessionLiveDto
     {
@@ -308,7 +310,7 @@ public class SessionService : ISessionService
         SessionEndsAtMs = new DateTimeOffset(sessionEndsAt).ToUnixTimeMilliseconds(),
         AttendanceCount = attendanceCount,
         Students = studentDtos,
-        QrCodeBase64 = session.Id.ToString() + " " + rawCode
+        QrCodeBase64 = qr
     };
 }
 

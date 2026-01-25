@@ -103,10 +103,9 @@ public class AttendanceController : Controller
         // 10.0.0.0/8
         // 172.16.0.0/12
         // 192.168.0.0/16
-        // return IsInCidr(ip, "10.0.0.0/8")
-        //        || IsInCidr(ip, "172.16.0.0/12")
-        //        || IsInCidr(ip, "192.168.0.0/16");
-        return IsInCidr(ip, "192.168.96.0/20");
+        return IsInCidr(ip, "10.0.0.0/8")
+               || IsInCidr(ip, "172.16.0.0/12")
+               || IsInCidr(ip, "192.168.0.0/16");
     }
 
     private static bool IsInCidr(IPAddress ip, string cidr)
