@@ -2,44 +2,17 @@ using AttendanceStudents.Domain.Entities;
 using AttendanceStudents.Repository;
 using AttendanceStudents.Service.Interfaces;
 using AttendanceStudents.Service.Implementations;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
-using System.IO;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // MVC
 builder.Services.AddControllersWithViews();
 
-// --------------------
-// DB (SQLite) – Azure-safe path
-// --------------------
-static string ResolveSqlitePath(IHostEnvironment env)
-{
-    // Local dev -> keep db in project folder (easy)
-    if (env.IsDevelopment())
-        return Path.Combine(env.ContentRootPath, "attendance.db");
-
-    // Azure App Service -> persistent storage under HOME/data
-    // Windows: HOME = D:\home
-    // Linux:   HOME = /home
-    var home = Environment.GetEnvironmentVariable("HOME");
-    if (!string.IsNullOrWhiteSpace(home))
-    {
-        var dataDir = Path.Combine(home, "data");
-        Directory.CreateDirectory(dataDir);
-        return Path.Combine(dataDir, "attendance.db");
-    }
-
-    // Fallback
-    return Path.Combine(env.ContentRootPath, "attendance.db");
-}
-
-var sqlitePath = ResolveSqlitePath(builder.Environment);
-var sqliteConn = $"Data Source={sqlitePath}";
-
+// DB
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(sqliteConn));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Repositories
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -59,9 +32,6 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
-
-    // Cross-site cookies are needed only if you use ngrok / different domain.
-    // Keep as you had it:
     options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
@@ -69,7 +39,8 @@ builder.Services.AddSession(options =>
 var app = builder.Build();
 
 // --------------------
-// Forwarded Headers (MUST be early)
+// IMPORTANT: Forwarded Headers
+// (ОБАВЕЗНО за IP ограничување, QR скенирање од телефон, IIS)
 // --------------------
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
@@ -85,23 +56,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// Static + routing
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
 
-// Session before auth
+// Session мора да е пред Authorization
 app.UseSession();
-app.UseAuthorization();
 
-// --------------------
-// Apply migrations on startup (so Azure creates/updates DB)
-// --------------------
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
-}
+app.UseAuthorization();
 
 // Routes
 app.MapControllerRoute(
