@@ -52,13 +52,31 @@ public class ProfessorService : IProfessorService
         if (IsCourseAssigned(professorId, courseId))
             return false;
 
-        _pcRepo.Insert(new ProfessorCourse
-        {
-            ProfessorId = professorId,
-            CourseId = courseId
-        });
+        var newCourse = _courseRepo.Get(c => c.Id == courseId);
+        if (newCourse == null) return false;
 
-        return true;
+        if (!newCourse.DayOfWeek.HasValue || !newCourse.StartTime.HasValue || !newCourse.EndTime.HasValue)
+        {
+            _pcRepo.Insert(new ProfessorCourse { ProfessorId = professorId, CourseId = courseId });
+            return true;
+        }
+
+        var ns = newCourse.StartTime.Value;
+        var ne = newCourse.EndTime.Value;
+
+        var existingCourses = _courseRepo.GetAll(c =>
+            c.ProfessorCourses.Any(pc => pc.ProfessorId == professorId) &&
+            c.DayOfWeek == newCourse.DayOfWeek &&
+            c.StartTime.HasValue && c.EndTime.HasValue
+        ).ToList();
+
+        var hasOverlap = existingCourses.Any(c =>
+            ns < c.EndTime!.Value && ne > c.StartTime!.Value
+        );
+
+        _pcRepo.Insert(new ProfessorCourse { ProfessorId = professorId, CourseId = courseId });
+
+        return !hasOverlap;
     }
 
     public void RemoveCourseFromProfessor(Guid professorId, Guid courseId)

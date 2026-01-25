@@ -45,7 +45,7 @@ public class SessionService : ISessionService
         {
             var week1 = _sessionRepo.Get(s => s.CourseId == session.CourseId && s.WeekNumber == 1);
             if (week1 == null || !week1.SessionDate.HasValue)
-                throw new InvalidOperationException("Мора прво да се започне Недела 1 (за да се постават датумите).");
+                throw new InvalidOperationException("Мора прво да се започне Недела 1");
         }
 
         var baseDate = DateOnly.FromDateTime(DateTime.UtcNow);

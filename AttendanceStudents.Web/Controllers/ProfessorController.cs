@@ -70,9 +70,17 @@ public class ProfessorController : Controller
     {
         if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
         if (!IsProfessor()) return RedirectToAction("Index", "Home");
-        if (!TryGetProfessorId(out var professorId)) return RedirectToAction("Login", "Account");
+        if (!TryGetProfessorId(out var professorId))
+            return RedirectToAction("Login", "Account");
 
-        _professorService.AddCourseToProfessor(professorId, id);
+        var noOverlap = _professorService.AddCourseToProfessor(professorId, id);
+
+        if (!noOverlap)
+        {
+            TempData["Warning"] =
+                "Предметот е додаден, но се поклопува со друг предмет, проверете го распоредот!.";
+        }
+
         return RedirectToAction(nameof(Courses));
     }
 
@@ -193,4 +201,6 @@ public class ProfessorController : Controller
 
         return View(vm);
     }
+    
+    
 }

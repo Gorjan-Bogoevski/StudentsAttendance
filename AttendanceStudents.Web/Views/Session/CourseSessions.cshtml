@@ -13,6 +13,9 @@ sessions.Where(s => s.WeekNumber >= start && s.WeekNumber <= start + 5);
 
 string StatusLabel(SessionStatus st) => st == SessionStatus.Open ? "OPEN" : "CLOSED";
 
+var week1 = sessions.FirstOrDefault(s => s.WeekNumber == 1);
+var week1Started = week1 != null && week1.SessionDate.HasValue;
+var blockReason = "Мора прво да се започне Недела 1.";
 }
 @functions {
     string FormatDate(DateOnly? d)
@@ -268,9 +271,9 @@ string StatusLabel(SessionStatus st) => st == SessionStatus.Open ? "OPEN" : "CLO
         }
 
         .weekDate{
-            font-size: 12px;
+            font-size: 11px;
             color: rgba(229,231,235,.65);
-            margin: 0; /* важно */
+            margin: 0; 
         }
     </style>
 </head>
@@ -320,25 +323,47 @@ string StatusLabel(SessionStatus st) => st == SessionStatus.Open ? "OPEN" : "CLO
                     }
                     else
                     {
-                        <form class="cardForm @(usedClass)" style="animation-delay:@(i * 35)ms"
-                              method="post" asp-controller="Session" asp-action="Open"
-                              onsubmit="return confirm('Дали сте сигурни дека сакате да ја започнете сесијата?');">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@s.Id" />
+                        var canOpen = s.WeekNumber == 1 || week1Started;
 
-                            <button type="submit" class="cardBtn">
-                                <div class="card @(usedClass)">
+                        if (canOpen)
+                        {
+                            <form class="cardForm @(usedClass)" style="animation-delay:@(i * 35)ms"
+                                  method="post" asp-controller="Session" asp-action="Open"
+                                  onsubmit="return confirm('Дали сте сигурни дека сакате да ја започнете сесијата?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@s.Id" />
+
+                                <button type="submit" class="cardBtn">
+                                    <div class="card @(usedClass)">
+                                        <div class="cardHead">
+                                            <div class="weekInfo">
+                                                <h3 class="weekTitle">Недела @s.WeekNumber</h3>
+                                                <div class="weekDate">@FormatDate(s.SessionDate)</div>
+                                            </div>
+
+                                            <span class="tag closed">@StatusLabel(s.Status)</span>
+                                        </div>
+                                    </div>
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="cardLink @(usedClass)" style="animation-delay:@(i * 35)ms" title="@blockReason">
+                                <div class="card @(usedClass)" style="opacity:.55; cursor:not-allowed;">
                                     <div class="cardHead">
                                         <div class="weekInfo">
                                             <h3 class="weekTitle">Недела @s.WeekNumber</h3>
-                                            <div class="weekDate">@FormatDate(s.SessionDate)</div>
+                                            <div class="weekDate" style="margin-top:6px; opacity:.9;">
+                                                @blockReason
+                                            </div>
                                         </div>
 
-                                        <span class="tag closed">@StatusLabel(s.Status)</span>
+                                        <span class="tag closed">Заклучено</span>
                                     </div>
                                 </div>
-                            </button>
-                        </form>
+                            </div>
+                        }
                     }
 
                     i++;
@@ -380,25 +405,47 @@ string StatusLabel(SessionStatus st) => st == SessionStatus.Open ? "OPEN" : "CLO
                     }
                     else
                     {
-                        <form class="cardForm @(usedClass)" style="animation-delay:@(j * 35)ms"
-                              method="post" asp-controller="Session" asp-action="Open"
-                              onsubmit="return confirm('Дали сте сигурни дека сакате да ја започнете сесијата?');">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@s.Id" />
+                        var canOpen = s.WeekNumber == 1 || week1Started;
 
-                            <button type="submit" class="cardBtn">
-                                <div class="card @(usedClass)">
+                        if (canOpen)
+                        {
+                            <form class="cardForm @(usedClass)" style="animation-delay:@(i * 35)ms"
+                                  method="post" asp-controller="Session" asp-action="Open"
+                                  onsubmit="return confirm('Дали сте сигурни дека сакате да ја започнете сесијата?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@s.Id" />
+
+                                <button type="submit" class="cardBtn">
+                                    <div class="card @(usedClass)">
+                                        <div class="cardHead">
+                                            <div class="weekInfo">
+                                                <h3 class="weekTitle">Недела @s.WeekNumber</h3>
+                                                <div class="weekDate">@FormatDate(s.SessionDate)</div>
+                                            </div>
+
+                                            <span class="tag closed">@StatusLabel(s.Status)</span>
+                                        </div>
+                                    </div>
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="cardLink @(usedClass)" style="animation-delay:@(i * 35)ms" title="@blockReason">
+                                <div class="card @(usedClass)" style="opacity:.55; cursor:not-allowed;">
                                     <div class="cardHead">
                                         <div class="weekInfo">
                                             <h3 class="weekTitle">Недела @s.WeekNumber</h3>
-                                            <div class="weekDate">@FormatDate(s.SessionDate)</div>
+                                            <div class="weekDate" style="margin-top:6px; opacity:.9;">
+                                                @blockReason
+                                            </div>
                                         </div>
 
-                                        <span class="tag closed">@StatusLabel(s.Status)</span>
+                                        <span class="tag closed">Заклучено</span>
                                     </div>
                                 </div>
-                            </button>
-                        </form>
+                            </div>
+                        }
                     }
 
                     j++;
