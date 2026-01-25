@@ -15,3 +15,4 @@
 /Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/obj/Debug/net9.0/refint/AttendanceStudents.Service.dll
 /Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/obj/Debug/net9.0/AttendanceStudents.Service.pdb
 /Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/obj/Debug/net9.0/ref/AttendanceStudents.Service.dll
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Service/obj/Debug/net9.0/AttendanceStudents.Service.sourcelink.json

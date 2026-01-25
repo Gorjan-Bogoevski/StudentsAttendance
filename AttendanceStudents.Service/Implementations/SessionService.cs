@@ -32,51 +32,6 @@ public class SessionService : ISessionService
     public Session? GetById(Guid id)
         => _sessionRepo.Get(s => s.Id == id);
 
-    public void Create(Session session)
-    {
-        Validate(session);
-
-        session.Status = SessionStatus.Closed;
-        session.OpenedAt = null;
-        session.ClosedAt = null;
-
-        session.AccessCodeHash = null;
-        session.CodeIssuedAt = null;
-        session.CodeValidUntil = null;
-
-        session.TimesOpened = 0;
-
-        _sessionRepo.Insert(session);
-    }
-
-    public void Update(Session session)
-    {
-        Validate(session);
-
-        var existing = _sessionRepo.Get(s => s.Id == session.Id);
-        if (existing == null)
-            throw new ArgumentException("Session does not exist.");
-
-        if (existing.Status == SessionStatus.Open)
-            throw new InvalidOperationException("Не можеш да менуваш сесија додека е отворена.");
-
-        existing.WeekNumber = session.WeekNumber;
-        existing.LoginWindowSeconds = session.LoginWindowSeconds;
-
-        _sessionRepo.Update(existing);
-    }
-
-    public void Delete(Guid id)
-    {
-        var existing = _sessionRepo.Get(s => s.Id == id);
-        if (existing == null) return;
-
-        if (existing.Status == SessionStatus.Open)
-            throw new InvalidOperationException("Не можеш да избришеш отворена сесија.");
-
-        _sessionRepo.Delete(existing);
-    }
-
     public string Open(Guid sessionId)
     {
         var session = _sessionRepo.Get(s => s.Id == sessionId);
@@ -165,7 +120,6 @@ public class SessionService : ISessionService
         session.Status = SessionStatus.Closed;
         session.ClosedAt = DateTime.UtcNow;
 
-        // invalidate code
         session.AccessCodeHash = null;
         session.CodeIssuedAt = null;
         session.CodeValidUntil = null;
@@ -194,7 +148,6 @@ public class SessionService : ISessionService
         if (studentId == Guid.Empty) return false;
         if (!VerifyAccessCode(sessionId, code)) return false;
 
-        // prevent duplicates
         var existing = _attendanceRepo.Get(a => a.SessionId == sessionId && a.StudentId == studentId);
         if (existing != null) return false;
 
@@ -207,18 +160,7 @@ public class SessionService : ISessionService
         _attendanceRepo.Insert(attendance);
         return true;
     }
-
-    private static void Validate(Session s)
-    {
-        if (s.CourseId == Guid.Empty)
-            throw new ArgumentException("CourseId is required.");
-
-        if (s.WeekNumber < 1 || s.WeekNumber > 12)
-            throw new ArgumentException("WeekNumber мора да биде 1..12.");
-
-        if (s.LoginWindowSeconds <= 0 || s.LoginWindowSeconds > 3600)
-            throw new ArgumentException("LoginWindowSeconds мора да биде 1..3600 (1 час max).");
-    }
+    
 
     private static string GenerateNumericCode(int digits)
     {
@@ -299,9 +241,9 @@ public class SessionService : ISessionService
     session.CodeValidUntil = now.AddSeconds(50);
     _sessionRepo.Update(session); 
     
-    // var joinUrl = $"http://192.168.1.146:5035/Attendance/Join?sessionId={session.Id}&code={rawCode}";
-    var baseUrl = "https://119d823f6e2d.ngrok-free.app";
-    var joinUrl = $"{baseUrl}/Attendance/Join?sessionId={session.Id}&code={rawCode}";
+    var joinUrl = $"http://192.168.1.146:5035/Attendance/Join?sessionId={session.Id}&code={rawCode}";
+    // var baseUrl = "https://119d823f6e2d.ngrok-free.app";
+    // var joinUrl = $"{baseUrl}/Attendance/Join?sessionId={session.Id}&code={rawCode}";
     var qr = _qrCodeService.GeneratePngDataUri(joinUrl);
 
     return new SessionLiveDto

@@ -15,3 +15,4 @@
 /Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/obj/Debug/net9.0/ref/AttendanceStudents.Repository.dll
 /Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/bin/Debug/net9.0/AttendanceStudents.Repository.runtimeconfig.json
 /Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/obj/Debug/net9.0/AttendanceStudents.Repository.genruntimeconfig.cache
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Repository/obj/Debug/net9.0/AttendanceStudents.Repository.sourcelink.json

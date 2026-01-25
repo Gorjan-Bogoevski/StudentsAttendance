@@ -9,14 +9,12 @@ public class ProfessorController : Controller
 {
     private readonly ICourseService _courseService;
     private readonly IProfessorService _professorService;
-    private readonly ISessionService _sessionService;
     private readonly IReportService _reportService;
 
-    public ProfessorController(ICourseService courseService, IProfessorService professorService, ISessionService sessionService, IReportService reportService)
+    public ProfessorController(ICourseService courseService, IProfessorService professorService, IReportService reportService)
     {
         _courseService = courseService;
         _professorService = professorService;
-        _sessionService = sessionService;
         _reportService = reportService;
     }
 
@@ -67,9 +65,8 @@ public class ProfessorController : Controller
         return View(myCourses);
     }
 
-    // ✅ Add course to my courses
     [HttpPost]
-    public IActionResult AddToMyCourses(Guid id) // id = courseId
+    public IActionResult AddToMyCourses(Guid id)
     {
         if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
         if (!IsProfessor()) return RedirectToAction("Index", "Home");
@@ -80,7 +77,7 @@ public class ProfessorController : Controller
     }
 
     [HttpPost]
-    public IActionResult RemoveFromMyCourses(Guid id) // id = courseId
+    public IActionResult RemoveFromMyCourses(Guid id) 
     {
         if (!IsLoggedIn()) return RedirectToAction("Login", "Account");
         if (!IsProfessor()) return RedirectToAction("Index", "Home");
@@ -90,7 +87,6 @@ public class ProfessorController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // ---------------- Admin CRUD ----------------
 
     [HttpGet]
     public IActionResult CreateCourse()
@@ -164,7 +160,6 @@ public class ProfessorController : Controller
         return RedirectToAction(nameof(Courses));
     }
     
-    // GET: /Professor/Reports
     [HttpGet]
     public IActionResult Reports()
     {
@@ -174,10 +169,9 @@ public class ProfessorController : Controller
         var professorId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
         var courses = _professorService.GetMyCourses(professorId);
 
-        return View(courses); // List<Course>
+        return View(courses); 
     }
 
-    // GET: /Professor/CourseReport?courseId=...&search=...&week=...
     [HttpGet]
     public IActionResult CourseReport(Guid courseId, string? search, int? week)
     {

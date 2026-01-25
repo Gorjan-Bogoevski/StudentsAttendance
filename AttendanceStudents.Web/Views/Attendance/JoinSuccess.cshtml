@@ -176,12 +176,16 @@
             <p class="muted">Можеш слободно да ја затвориш оваа страница.</p>
         </div>
 
-        <div class="actions">
-            @* <a class="btn" href="javascript:history.back()">← Назад</a> *@
-            @* <a class="btn btnPrimary" href="/Home/StudentDashboard">ОК</a> *@
-        </div>
+    
     </div>
 </div>
 
 </body>
 </html>
+<script>
+    history.pushState(null, null, location.href);
+
+    window.onpopstate = function () {
+        history.pushState(null, null, location.href);
+    };
+</script>

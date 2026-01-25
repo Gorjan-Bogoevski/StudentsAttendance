@@ -265,3 +265,4 @@
 /Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Web/bin/Debug/net9.0/runtimes/win-x64/native/e_sqlite3.dll
 /Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Web/bin/Debug/net9.0/runtimes/win-x86/native/e_sqlite3.dll
 /Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Web/bin/Debug/net9.0/QRCoder.dll
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Web/obj/Debug/net9.0/AttendanceStudents.Web.sourcelink.json

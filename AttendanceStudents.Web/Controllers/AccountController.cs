@@ -16,7 +16,6 @@ public class AccountController : Controller
     [HttpGet]
     public IActionResult Login()
     {
-        // if already logged in -> redirect
         if (HttpContext.Session.GetString("UserId") != null)
             return RedirectToAction("Index", "Home");
 

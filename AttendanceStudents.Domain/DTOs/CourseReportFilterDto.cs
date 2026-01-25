@@ -7,10 +7,5 @@ public class CourseReportFilterDto
     public int? Week { get; set; }
 
     public string? Search { get; set; }
-
-    public bool? PresentOnly { get; set; }
     
-    public Dictionary<int, DateOnly?> WeekDates { get; set; } = new();
-
-    public List<int> Weeks { get; set; } = new();
 }

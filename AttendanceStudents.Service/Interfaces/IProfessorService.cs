@@ -10,5 +10,4 @@ public interface IProfessorService
     bool AddCourseToProfessor(Guid professorId, Guid courseId);
     void RemoveCourseFromProfessor(Guid professorId, Guid courseId);
 
-    bool IsCourseAssigned(Guid professorId, Guid courseId);
 }

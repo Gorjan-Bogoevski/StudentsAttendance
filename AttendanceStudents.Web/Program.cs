@@ -36,35 +36,21 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-// --------------------
-// IMPORTANT: Forwarded Headers
-// (ОБАВЕЗНО за IP ограничување, QR скенирање од телефон, IIS)
-// --------------------
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders =
-        ForwardedHeaders.XForwardedFor |
-        ForwardedHeaders.XForwardedProto
-});
 
-// Error handling
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
-// app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
-// Session мора да е пред Authorization
 app.UseSession();
 
 app.UseAuthorization();
 
-// Routes
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -10,20 +10,17 @@ namespace AttendanceStudents.Web.Controllers;
 public class SessionController : Controller
 {
     private readonly ISessionService _sessionService;
-    private readonly IAttendanceService _attendanceService;
-    private readonly IQRCodeService _qrCodeService;
 
-    public SessionController(ISessionService sessionService, IAttendanceService attendanceService, IQRCodeService qrCodeService)
+
+    public SessionController(ISessionService sessionService)
     {
         _sessionService = sessionService;
-        _attendanceService = attendanceService;
-        _qrCodeService = qrCodeService;
+    
     }
 
     private bool IsLoggedIn() => HttpContext.Session.GetString("UserId") != null;
     private bool IsProfessor() => HttpContext.Session.GetString("UserType") == "Professor";
 
-    // /Session/CourseSessions?courseId=...
     [HttpGet]
     public IActionResult CourseSessions(Guid courseId)
     {
@@ -35,7 +32,6 @@ public class SessionController : Controller
         return View(sessions);
     }
 
-    // /Session/Details/{id}
     [HttpGet]
     public IActionResult Details(Guid id)
     {
@@ -50,7 +46,6 @@ public class SessionController : Controller
         return View(session);
     }
 
-    // /Session/Open/{id}
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Open(Guid id)
@@ -64,7 +59,6 @@ public class SessionController : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
-    // /Session/Close/{id}
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Close(Guid id)
@@ -93,7 +87,6 @@ public class SessionController : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
-    // GET: /Session/LiveInfo/{id}
     [HttpGet]
     public IActionResult LiveInfo(Guid id)
     {

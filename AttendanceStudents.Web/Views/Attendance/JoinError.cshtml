@@ -1,8 +1,9 @@
+@model string
 @{
     ViewData["Title"] = "Грешка";
     Layout = null;
 
-    var msg = (ViewBag.Error as string) ?? "Настана грешка при пријавување на присуство.";
+    var msg = @Model;
 }
 
 <!DOCTYPE html>
@@ -164,17 +165,17 @@
         <div class="body">
             <div class="alert">@msg</div>
 
-            <ul class="tips">
-                <li>Ако си бил долго на страната, скенирај повторно (може да е истечено).</li>
-            </ul>
-        </div>
-
-        <div class="actions">
-            @* <a class="btn" href="javascript:history.back()">← Назад</a> *@
-            @* <a class="btn btnDanger" href="/Account/Login">Најава</a> *@
+            
         </div>
     </div>
 </div>
 
 </body>
 </html>
+<script>
+    history.pushState(null, null, location.href);
+
+    window.onpopstate = function () {
+        history.pushState(null, null, location.href);
+    };
+</script>

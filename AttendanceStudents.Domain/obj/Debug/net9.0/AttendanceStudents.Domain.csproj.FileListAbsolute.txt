@@ -9,3 +9,4 @@
 /Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/obj/Debug/net9.0/refint/AttendanceStudents.Domain.dll
 /Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/obj/Debug/net9.0/AttendanceStudents.Domain.pdb
 /Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/obj/Debug/net9.0/ref/AttendanceStudents.Domain.dll
+/Users/gorjan/RiderProjects/AttendanceStudents.Web/AttendanceStudents.Domain/obj/Debug/net9.0/AttendanceStudents.Domain.sourcelink.json
