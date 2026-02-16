@@ -5,7 +5,7 @@
     ViewData["Title"] = "Сесија – Недела " + Model.WeekNumber;
     Layout = null;
     
-    var attendanceCount = ViewBag.AttendanceCount ?? 0; // ако подоцна додадеш count во controller
+    var attendanceCount = ViewBag.AttendanceCount ?? 0; 
 }
 @functions{
     string FormatDate(DateOnly? d) => d.HasValue ? d.Value.ToString("dd.MM.yyyy") : "";
@@ -117,7 +117,6 @@
             animation: qrPop .45s cubic-bezier(.2,.9,.2,1) both;
         }
 
-        /* Бел „платнен“ background за QR */
         .qrWrap img{
             background:#fff;
             padding: 14px;
@@ -127,7 +126,6 @@
             box-shadow: 0 12px 30px rgba(0,0,0,.35);
         }
 
-        /* Текст под QR */
         .qrHint{
             margin-top: 12px;
             font-size: 13px;
@@ -136,7 +134,6 @@
             color: rgba(229,231,235,.9);
         }
 
-        /* Анимација */
         @@keyframes qrPop{
             from{
                 opacity:0;
@@ -193,12 +190,11 @@
             flex-direction:column;
             gap:10px;
 
-            max-height: 220px;     /* фиксна висина */
-            overflow-y: auto;      /* SCROLL */
+            max-height: 220px;     
+            overflow-y: auto;      
             padding-right: 6px;
         }
 
-        /* убав scrollbar */
         .studentsList::-webkit-scrollbar{
             width: 6px;
         }
@@ -347,7 +343,6 @@
     remainingEl.textContent = `${mm}:${ss}`;
   }
 
-  // Buttons +/- 1 min
   (function () {
     const minusBtn = document.getElementById("minus1");
     const plusBtn  = document.getElementById("plus1");
@@ -379,6 +374,9 @@
       <div class="stRow" style="animation-delay:${idx * 25}ms">
         <div class="stLeft">
           <div class="stName">${escapeHtml(s.fullName || "")}</div>
+        </div>
+        <div class="stLeft">
+          <div class="stName">${escapeHtml(s.index || "")}</div>
         </div>
       </div>
     `).join("");
@@ -423,7 +421,7 @@
                 if (qrImg && isOpen && data.qrCodeBase64) {
                     qrImg.src = data.qrCodeBase64;
                 } else {
-                    qrImg.removeAttribute("src"); // или: qrImg.src = "";
+                    qrImg.removeAttribute("src"); 
                 }
             }
 

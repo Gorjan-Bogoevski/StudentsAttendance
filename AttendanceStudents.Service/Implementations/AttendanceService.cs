@@ -68,16 +68,8 @@ public class AttendanceService : IAttendanceService
     }
     private static bool IsAllowedForHomeTest(IPAddress ip)
     {
-        // дозволи localhost (за тест на истата машина)
         if (IPAddress.IsLoopback(ip)) return true;
-
-        // дозволи типични локални range-ови:
-        // 10.0.0.0/8
-        // 172.16.0.0/12
-        // 192.168.0.0/16
-        // return IsInCidr(ip, "10.0.0.0/8")
-        //        || IsInCidr(ip, "172.16.0.0/12")
-        //        || IsInCidr(ip, "192.168.0.0/16");
+        
         return IsInCidr(ip, "192.168.1.0/25");
     }
 
