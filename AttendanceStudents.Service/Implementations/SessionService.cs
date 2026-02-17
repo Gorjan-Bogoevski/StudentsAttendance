@@ -242,7 +242,6 @@ public class SessionService : ISessionService
     _sessionRepo.Update(session); 
     
     var joinUrl = $"http://192.168.1.146:5035/Attendance/Join?sessionId={session.Id}&code={rawCode}";
-    // var baseUrl = "https://119d823f6e2d.ngrok-free.app";
     // var joinUrl = $"{baseUrl}/Attendance/Join?sessionId={session.Id}&code={rawCode}";
     var qr = _qrCodeService.GeneratePngDataUri(joinUrl);
 
